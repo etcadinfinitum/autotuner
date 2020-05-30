@@ -7,14 +7,17 @@ classdef AutoTuner
         windowSize  % Size of Fourier Transform window
         overlap     % Size of FFT window overlap
         originalSpecgram    % The spectrogram of the input signal
+        win             % The shape of the sampling window (a vector value, hamming window UFN)
     end     % public properties
 
     properties (Access = private)
         targetFreq      % Frequency to tune to in Hz
         sampledAtFreq   % Sampling frequency of input signal
+        
     end     % private properties
 
     properties (Constant, Access = private)
+        fftLength = 256;
     end
 
     methods (Access = public)
@@ -34,19 +37,25 @@ classdef AutoTuner
 
             obj.originalSig = sum(sig, 2);
 
-            obj.overlap = min(128, obj.windowSize/2);
+            obj.overlap = obj.windowSize / 2;
 
             obj.targetFreq = targetFreqHz;
             obj.sampledAtFreq = samplingFreqHz;
 
+            obj.win = hamming(obj.windowSize);
         end
 
-        function [s, w, t] = getFreqSpectrum(obj)
-            [s, w, t] = spectrogram(obj.originalSig, obj.windowSize, obj.overlap);
-            obj.originalSpecgram = s;
+        function [s, f, t] = getFreqSpectrum(obj)
+            [s, f, t] = stft(obj.originalSig, obj.sampledAtFreq, 'Window', obj.win, 'OverlapLength', obj.overlap, 'FFTLength', obj.fftLength);
+            % spectrogram(obj.originalSig, obj.windowSize, obj.overlap);
         end
 
         % function modulateFrequency
+
+        function [y, Fs] = convertSpectrumToSignal(obj, s)
+            y = istft(s, obj.sampledAtFreq, 'Window', obj.win, 'OverlapLength', obj.overlap, 'FFTLength', obj.fftLength);
+            Fs = obj.sampledAtFreq;
+        end
 
     end     % public methods
 
