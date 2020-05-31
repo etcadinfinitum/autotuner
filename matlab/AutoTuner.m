@@ -53,14 +53,50 @@ classdef AutoTuner
         % function modulateFrequency
 
         function [y, Fs] = convertSpectrumToSignal(obj, s)
-            y = istft(s, obj.sampledAtFreq, 'Window', obj.win, 'OverlapLength', obj.overlap, 'FFTLength', obj.fftLength);
-            Fs = obj.sampledAtFreq;
+            [s f t] = obj.getFreqSpectrum();
+            
         end
+        
+%         function AutonTuneToSelf(obj) 
+%             magspec = magnitudeSpectrum(obj.originalSig);
+%             hps = harmonicProductSpectrum(magspec);
+%             [s freqSpace] = stft(obj.originalSig);
+%             
+%             buckets = length(s(1,:));
+%             s_length = length(s(:,1));
+%             
+%             for idx = 1:buckets
+%                maxAmplitudes(idx) = max(hps(:,idx));
+%                pitchLocations = find(hps(:,idx) == maxAmplitudes(idx),idx,'first');
+%                pitchVector = freqSpace(pitchLocations(idx));
+%                adjustedPitchVector = compare
+%             end
+%             
+%         end
 
     end     % public methods
 
     methods (Access = private)
+        
+        function magspec = magnitudeSpectrum(digital_signal)
+           nfft = 2^nextpow2(length(digital_signal));
+           magspec = fft(digital_signal, nfft);
+           w = magspec/length(digital_signal);
+           magspec = abs(w(1:floor(nfft/2 + 1)));
+           magspec = 20*log10(magspec/min(magspec(:)));
+        end
 
+        function hps = harmonicProductSpectrum(magspec)
+           % now can find hps (I hope)
+           d = magspec(1:2:length(magspec));
+           p = zeros((length(magspec) - length(d)),1);
+           d = [d; p];
+           hps = magspec.*d;
+           for idx = 1:length(hps)
+               hps(idx) = hps(idx)^(0.5);
+           end
+        end
+        
     end     % private methods
 
 end
