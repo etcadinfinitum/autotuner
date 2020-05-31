@@ -37,7 +37,7 @@ classdef AutoTuner
 
             obj.originalSig = sum(sig, 2);
 
-            obj.overlap = obj.windowSize / 2;
+            obj.overlap = round(obj.windowSize / 2);
 
             obj.targetFreq = targetFreqHz;
             obj.sampledAtFreq = samplingFreqHz;
@@ -88,21 +88,21 @@ classdef AutoTuner
 
     methods (Access = private)
         
-        function correctedPitch = correctedPitchIdentification(ogPitch, pitches)
+        function correctedPitch = correctedPitchIdentification(ogPitch, pitchTable)
            % assumes pitches is sorted in ascending order
-           if ogPitch < pitches(1)
-               correctedPitch = pitches(1);
-           elseif ogPitch > pitches(length(pitches))
-               correctedPitch = pitches(length(pitches));
+           if ogPitch < pitchTable(1)
+               correctedPitch = pitchTable(1);
+           elseif ogPitch > pitchTable(length(pitchTable))
+               correctedPitch = pitchTable(length(pitchTable));
            else
                % unfortunate decision to linear search, but I'm okay w/ it
-               curdiff = (pitches(length(pitches)) - pitches(1));
-               correctedPitch = pitches(1);
-               for idx = 2:(length(pitches)-1)
-                   newdiff = abs(ogPitch - pitches(idx));
+               curdiff = (pitchTable(length(pitchTable)) - pitchTable(1));
+               correctedPitch = pitchTable(1);
+               for idx = 2:(length(pitchTable)-1)
+                   newdiff = abs(ogPitch - pitchTable(idx));
                    if newdiff < curdiff
                       curdiff = newdiff;
-                      correctedPitch = pitches(idx);
+                      correctedPitch = pitchTable(idx);
                    end
                end
            end
