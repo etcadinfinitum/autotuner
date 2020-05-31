@@ -88,6 +88,15 @@ classdef AutoTuner
 
     methods (Access = private)
         
+        function correctedPitch = correctedPitchIdentification(ogPitch, pitches)
+           % precondition:  pitches is a vector containing a list of pitches to target
+           %                ogPitch is the original pitch being passed to
+           %                match to one of the pitches
+           % TODO: implement this
+           % postcondition: the nearest pitch to ogpitch in pitches is
+           %                returned
+        end
+        
         function magspec = magnitudeSpectrum(digital_signal)
            nfft = 2^nextpow2(length(digital_signal));
            magspec = fft(digital_signal, nfft);
