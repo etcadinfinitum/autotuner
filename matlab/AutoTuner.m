@@ -57,22 +57,32 @@ classdef AutoTuner
             
         end
         
-%         function AutonTuneToSelf(obj) 
-%             magspec = magnitudeSpectrum(obj.originalSig);
-%             hps = harmonicProductSpectrum(magspec);
-%             [s freqSpace] = stft(obj.originalSig);
-%             
-%             buckets = length(s(1,:));
-%             s_length = length(s(:,1));
-%             
-%             for idx = 1:buckets
-%                maxAmplitudes(idx) = max(hps(:,idx));
-%                pitchLocations = find(hps(:,idx) == maxAmplitudes(idx),idx,'first');
-%                pitchVector = freqSpace(pitchLocations(idx));
-%                adjustedPitchVector = compare
-%             end
-%             
-%         end
+        function AutoTuneToSelf(obj) 
+            magspec = magnitudeSpectrum(obj.originalSig);
+            hps = harmonicProductSpectrum(magspec);
+            [s freqSpace] = stft(obj.originalSig);
+            
+            buckets = length(s(1,:));
+            s_length = length(s(:,1));
+            
+            for idx = 1:buckets
+               maxAmplitudes(idx) = max(hps(:,idx));
+               pitchLocations = find(hps(:,idx) == maxAmplitudes(idx),idx,'first');
+               pitchVector = freqSpace(pitchLocations(idx));
+               adjustedPitchVector(idx) = correctPitchIdentification(pitchVector(idx), pitchTable);
+               temp = adjustedPitchVector(idx)/pitchVector(idx);
+               for idx2 = 1:s_length
+                   det = round(idx2/temp);
+                   if det <= 0
+                       det = 1;
+                   end
+                   if det <= s_length
+                       obj.tuned(idx, idx2) = s((hps),idx);
+                   end
+               end
+            end
+            
+        end
 
     end     % public methods
 
