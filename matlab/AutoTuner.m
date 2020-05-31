@@ -53,8 +53,8 @@ classdef AutoTuner
         % function modulateFrequency
 
         function [y, Fs] = convertSpectrumToSignal(obj, s)
-            [s f t] = obj.getFreqSpectrum();
-            
+            y = istft(s, obj.sampledAtFreq, 'Window', obj.win, 'OverlapLength', obj.overlap, 'FFTLength', obj.fftLength);
+            Fs = obj.sampledAtFreq;
         end
         
         function AutoTuneToSelf(obj) 
