@@ -6,7 +6,7 @@ function spectrogramPlot(t, w, s, plotTitle, filename)
     view(0, 90);
     xlabel('Time (s)');
     colorbar;
-    ylabel('Frequency (radians, multiple of $\pi$)', 'Interpreter', 'latex');
+    ylabel('Frequency (Hz)');
     title(plotTitle);
     print(filename, '-dpng');
 end
