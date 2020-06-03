@@ -1,6 +1,5 @@
 addpath('../sounds');
-
-addpath('../../signals/utils');
+addpath('utils');
 
 % Read in pitch table from this directory
 pitchTable
