@@ -1,0 +1,11 @@
+title: Autotuner
+description: Experiments in autotuning arbitrary sounds in Matlab.
+baseurl: /autotuner
+
+theme: jekyll-theme-midnight
+
+markdown: kramdown
+
+plugins:
+  - jemoji
+  - jekyll-spaceship

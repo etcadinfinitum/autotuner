@@ -104,18 +104,17 @@ Here's a simple test which uses an E♭ in the 5th octave as input.
 | Original Signal | Output Signal   |
 |-----------------|-----------------|
 | ![original spectrogram of E-flat 5](./media/images/v1_straighttoneEb5_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_straighttoneEb5_specgram_tuned.png) |
-|  <audio controls><source src="./media/audio/straighttoneEb5_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls><source src="./media/audio/v1_straighttone_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+|  <audio controls markdown="0"><source src="./media/audio/straighttoneEb5_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v1_straighttone_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
 
 We then tested the software on complex and overtone-rich signals.
 
-| File Information | Original Signal | Output Signal   |
 |--------|-----------------|-----------------|
-| Countdown speech spectrograms | ![original spectrogram of E-flat 5](./media/images/v1_countdown_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_countdown_specgram_tuned.png) |
-| Countdown speech audio |  <audio controls><source src="./media/audio/v1_countdown_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
-| C Major scale spectrograms | ![original spectrogram of c major scale](./media/images/v1_scale_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_scale_specgram_tuned.png) |
-| C Major scale audio results |  <audio controls><source src="./media/audio/v1_scale_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
-| Buddhist Vajrayana chant spectrogram | ![original spectrogram of vajrayana buddhist chant](./media/images/v1_vajrayana_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_vajrayana_specgram_tuned.png) |
-| Buddhist Vajrayana chant audio | <audio controls><source src="./media/audio/v1_vajrayana_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
+| Spoken countdown | ![original spectrogram of E-flat 5](./media/images/v1_countdown_specgram_original.png)<br/>Original spectrogram of spoken numerical countdown. | ![spectrogram after tuning](./media/images/v1_countdown_specgram_tuned.png)<br/>Spectrogram of speech example after pitch correction is applied. |
+| ^^ | Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound. <br/><audio controls markdown="0" style="width: 100%;"><source src="link ./media/audio/v1_countdown_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
+| Synthesized C major scale | ![original spectrogram of c major scale](./media/images/v1_scale_specgram_original.png)<br/>Original spectrogram of C major scale. | ![spectrogram after tuning](./media/images/v1_scale_specgram_tuned.png)<br/>Spectrogram of C major scale after pitch correction is applied. |
+| C Major scale audio results |  Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound. <br/><audio controls markdown="0" style="width: 100%;"><source src="./media/audio/v1_scale_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
+| Buddhist Vajrayana chant | ![original spectrogram of vajrayana buddhist chant](./media/images/v1_vajrayana_specgram_original.png)<br/>Original spectrogram of Buddhist vajrayana chant. | ![spectrogram after tuning](./media/images/v1_vajrayana_specgram_tuned.png)<br/>Spectrogram of chant after pitch correction is applied. |
+| Buddhist Vajrayana chant audio | Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound.<br/><audio controls markdown="0" style="width: 100%;"><source src="./media/audio/v1_vajrayana_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
 
 Strictly testing:
 
