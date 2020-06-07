@@ -4,8 +4,10 @@ addpath('utils');
 % Read in pitch table from this directory
 pitchTable
 
-performSinglePitchAutoTune('test_sig_Eb5', 'wav', pitches(5, 10), 'test_images/test_sig_Eb5');
+% performSinglePitchAutoTune('test_sig_Eb5', 'wav', pitches(5, 10), 'test_images/test_sig_Eb5');
 % performSinglePitchAutoTune('speech_countdown', 'aiff', pitches(5, 10), 'test_images/countdown');
+performSinglePitchAutoTune('eqt-major-sc', 'wav', pitches(5, 10), 'test_images/CMscale');
+performSinglePitchAutoTune('overtones_vajrayana', 'aiff', pitches(5, 10), 'test_images/vajrayana');
 
 function performSinglePitchAutoTune(audioFilename, audioFilenameExt, desiredPitch, spectrogramFileNameShort)
     [y, Fs] = audioread(['../sounds/', audioFilename, '.', audioFilenameExt]);

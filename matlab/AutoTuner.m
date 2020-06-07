@@ -81,7 +81,7 @@ classdef AutoTuner
                     posiSpectrum(:,i) = [col(-offset:end); zeros(-offset - 1, 1)];
                 else
                     % target freq is higher than mag spike location
-                    posiSpectrum(:,i) = [zeros(offset - 1, 1); col(1:offset)];
+                    posiSpectrum(:,i) = [zeros(offset, 1); col(1:length(col) - offset)];
                 end
             end
             %   4. after all columns have been processed, create copy of processed matrix which has all columns inverted (mirrored copy of altered positive frequencies)
