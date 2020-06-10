@@ -179,10 +179,21 @@ end
 
 As a point of comparison between these two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.
 
+Note that while the displayed results were achieved by first adding the two channels of audio sampled from the original .wav file, the same result was achieved by separately tuning each channel and recombining at the end. This is to be expected for a scale.
+
 | Original Signal | Output Signal   |
 |-----------------|-----------------|
 | ![Spectrogram for Original C-Major Scale Audio](./media/images/v2_scale_spectrogram_og.png) | ![spectrogram after tuning](./media/images/v2_scale_spectrogram_tuned.png) |
 |  <audio controls markdown="0"><source src="./media/audio/scale_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2_scale_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+
+There are two key observations to make:
+
+* First, the tones are smoother and appear to be the correct pitch.
+* Second, the duration of the output audio is slightly shorter.
+
+The first observation is reflective of the fact that this second approach works extremely well for single tone audio, while the second is reflective of the fact that, during the peak identification process, the beginning and end were ever so slightly truncated.
+
+While the C-Major scale provides an example of the advantages of this second approach over our first, now consider the Vajrayana chant.
 
 ## User Guide
 
