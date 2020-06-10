@@ -177,7 +177,14 @@ end
 
 ```
 
-As a point of comparison between these two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.
+Our first step was validating this second approach. To this end, we generated an audio file with constantly increasing frequency (available below), and attempted to tune it to the C-Major scale. This proved effective, and the tuning shows in the spectrogram as horizontal steps for each change in pitch.
+
+| Original Signal | Output Signal   |
+|-----------------|-----------------|
+| ![Spectrogram for Original Increasing Frequency Audio](./media/images/spectrogram_Increasing_original.png) | ![spectrogram after tuning](./media/images/v2_spectrogram_Increasing_tuned.png) |
+|  <audio controls markdown="0"><source src="./media/audio/increasing.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2_Increasing_tuned.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+
+Next, and as a point of comparison between the two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.
 
 Note that while the displayed results were achieved by first adding the two channels of audio sampled from the original .wav file, the same result was achieved by separately tuning each channel and recombining at the end. This is to be expected for a scale.
 
