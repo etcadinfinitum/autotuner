@@ -181,8 +181,8 @@ Our first step was validating this second approach. To this end, we generated an
 
 | Original Signal | Output Signal   |
 |-----------------|-----------------|
-| ![Spectrogram for Original Increasing Frequency Audio](./media/images/spectrogram_Increasing_original.png) | ![spectrogram after tuning](./media/images/v2_spectrogram_Increasing_tuned.png) |
-|  <audio controls markdown="0"><source src="./media/audio/increasing.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2_Increasing_tuned.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+| ![Spectrogram for Original Increasing Frequency Audio](./media/images/spectrogram__Increasing_original.png) | ![spectrogram after tuning](./media/images/v2_spectrogram__Increasing_tuned.png) |
+|  <audio controls markdown="0"><source src="./media/audio/increasing.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2__Increasing_tuned.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
 
 Next, and as a point of comparison between the two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.
 
