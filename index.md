@@ -123,7 +123,18 @@ $$H(z) = \frac{Y(z)}{X(z)}$$
 TODO: write up an analysis of what happened to the audio clips we tried 
 to autotune.
 
-### TODO: Approach 2: ????? (Bo is working on this)
+### Approach 2: Phase-Vocoder Approach
+
+A second approach was developed in parallel for testing and comparison purposes. This approach, described by Laroche and Dolson (1999), can be outlined as follows:
+
+* Take a Short-Time Fourier-Transform for the input signal.
+* Detect peaks within the STFT.
+* Calculate frequency shift for each peak.
+* Shift the frequency of each peak.
+* Inverse the STFT in order to produce a tuned signal.
+
+For the purposes of this approach, Matlab’s `spectrogram` function was used rather than the stft function, partially for the purpose of consolidating code where spectrogram’s needed to be produced anyways. The bulk of the process was performed by a single method, `correctPitchSpectrum`. That’s method’s function definition is shown below in Code Block 1.
+
 
 ## User Guide
 
@@ -231,4 +242,6 @@ NOTE: Suggested extensions to your program.
 ## References
 
 Diaz, Joe. "The Fate of Auto-Tune." Music and Technology (2009). [Online PDF.](https://ocw.mit.edu/courses/music-and-theater-arts/21m-380-music-and-technology-contemporary-history-and-aesthetics-fall-2009/projects/MIT21M_380F09_proj_mtech_3.pdf)
+
+Laroche, J., and M. Dolson. “New Phase-Vocoder Techniques for Pitch-Shifting, Harmonizing and Other Exotic Effects.” Proceedings of the 1999 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics. 1999, pp. 91–94., [doi:10.1109/aspaa.1999.810857](doi:10.1109/aspaa.1999.810857).
 
