@@ -138,7 +138,7 @@ For the purposes of this approach, Matlab’s `spectrogram` function was used ra
 **Code Block 1: correctPitchSpectrum method for autotuning approach 2**
 ```matlab
 function correctedSpectrum = correctPitchSpectrum(s, f, y, targetPitches)
-    % s - short-time spectrum
+    % s - short-time fourier-transform 
     % f - frequency space
     % return correctedSpectrum - a vector of the corrected short-time spectrum values
     
