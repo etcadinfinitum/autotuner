@@ -95,77 +95,10 @@ classdef AutoTuner
             y = real(istft(s, obj.sampledAtFreq, 'Window', obj.win, 'OverlapLength', obj.overlap, 'FFTLength', obj.fftLength));
             Fs = obj.sampledAtFreq;
         end
-        
-        function AutoTuneToSelf(obj) 
-            magspec = magnitudeSpectrum(obj.originalSig);
-            hps = harmonicProductSpectrum(magspec);
-            [s freqSpace] = stft(obj.originalSig);
-            
-            buckets = length(s(1,:));
-            s_length = length(s(:,1));
-            
-            for idx = 1:buckets
-               maxAmplitudes(idx) = max(hps(:,idx));
-               pitchLocations = find(hps(:,idx) == maxAmplitudes(idx),idx,'first');
-               pitchVector = freqSpace(pitchLocations(idx));
-               adjustedPitchVector(idx) = correctPitchIdentification(pitchVector(idx), pitchTable);
-               temp = adjustedPitchVector(idx)/pitchVector(idx);
-               for idx2 = 1:s_length
-                   det = round(idx2/temp);
-                   if det <= 0
-                       det = 1;
-                   end
-                   if det <= s_length
-                       obj.tuned(idx, idx2) = s((hps),idx);
-                   end
-               end
-            end
-            
-        end
 
     end     % public methods
 
     methods (Access = private)
-        
-        function correctedPitch = correctedPitchIdentification(ogPitch, pitchTable)
-           % assumes pitches is sorted in ascending order
-           if ogPitch < pitchTable(1)
-               correctedPitch = pitchTable(1);
-           elseif ogPitch > pitchTable(length(pitchTable))
-               correctedPitch = pitchTable(length(pitchTable));
-           else
-               % unfortunate decision to linear search, but I'm okay w/ it
-               curdiff = (pitchTable(length(pitchTable)) - pitchTable(1));
-               correctedPitch = pitchTable(1);
-               for idx = 2:(length(pitchTable)-1)
-                   newdiff = abs(ogPitch - pitchTable(idx));
-                   if newdiff < curdiff
-                      curdiff = newdiff;
-                      correctedPitch = pitchTable(idx);
-                   end
-               end
-           end
-           
-        end
-        
-        function magspec = magnitudeSpectrum(digital_signal)
-           nfft = 2^nextpow2(length(digital_signal));
-           magspec = fft(digital_signal, nfft);
-           w = magspec/length(digital_signal);
-           magspec = abs(w(1:floor(nfft/2 + 1)));
-           magspec = 20*log10(magspec/min(magspec(:)));
-        end
-
-        function hps = harmonicProductSpectrum(magspec)
-           % now can find hps (I hope)
-           d = magspec(1:2:length(magspec));
-           p = zeros((length(magspec) - length(d)),1);
-           d = [d; p];
-           hps = magspec.*d;
-           for idx = 1:length(hps)
-               hps(idx) = hps(idx)^(0.5);
-           end
-        end
         
     end     % private methods
 
