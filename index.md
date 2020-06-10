@@ -195,6 +195,11 @@ The first observation is reflective of the fact that this second approach works 
 
 While the C-Major scale provides an example of the advantages of this second approach over our first, now consider the Vajrayana chant.
 
+| Original Signal | Output Signal   |
+|-----------------|-----------------|
+| ![Spectrogram for Original Vajrayana Chant](./media/images/spectrogram_chant_original.png) | ![spectrogram after tuning](./media/images/v2_spectrogram_chant_tuned.png) |
+|  <audio controls markdown="0"><source src="./media/audio/vajrayana_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2_chant_tuned.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+
 ## User Guide
 
 Following these steps will allow anyone to run the software and 
