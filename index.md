@@ -103,8 +103,8 @@ Here's a simple test which uses an E♭ in the 5th octave as input.
 
 | Original Signal | Output Signal   |
 |-----------------|-----------------|
-| ![original spectrogram of E-flat 5](./media/images/v1_straighttoneEb5_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_straighttoneEb5_specgram_tuned.png) |
-|  <audio controls markdown="0"><source src="./media/audio/straighttoneEb5_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v1_straighttone_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
+| ![Spectrogram for Original C-Major Scale Audio](./media/images/v2_scale_spectrogram_og.png) | ![spectrogram after tuning](./media/images/v2_scale_spectrogram_tuned.png) |
+|  <audio controls markdown="0"><source src="./media/audio/scale_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v2_scale_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
 
 We then tested the software on complex and overtone-rich signals.
 
@@ -125,6 +125,8 @@ to autotune.
 
 ### Approach 2: Phase-Vocoder Approach
 
+**TODO: Move this section into "Techniques"**
+
 A second approach was developed in parallel for testing and comparison purposes. This approach, described by Laroche and Dolson (1999), can be outlined as follows:
 
 * Take a Short-Time Fourier-Transform for the input signal.
@@ -132,6 +134,10 @@ A second approach was developed in parallel for testing and comparison purposes.
 * Calculate frequency shift for each peak.
 * Shift the frequency of each peak.
 * Inverse the STFT in order to produce a tuned signal.
+
+**END TODO**
+
+**TODO: Flesh out introduction.**
 
 For the purposes of this approach, Matlab’s `spectrogram` function was used rather than the stft function, partially for the purpose of consolidating code where spectrogram’s needed to be produced anyways. The bulk of the process was performed by a single method, `correctPitchSpectrum`. That’s method’s function definition is shown below in Code Block 1.
 
@@ -170,6 +176,13 @@ function correctedSpectrum = correctPitchSpectrum(s, f, targetPitches)
 end
 
 ```
+
+As a point of comparison between these two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.
+
+| Original Signal | Output Signal   |
+|-----------------|-----------------|
+| ![original spectrogram of E-flat 5](./media/images/v1_straighttoneEb5_specgram_original.png) | ![spectrogram after tuning](./media/images/v1_straighttoneEb5_specgram_tuned.png) |
+|  <audio controls markdown="0"><source src="./media/audio/straighttoneEb5_original.wav" type="audio/wav">Your browser does not support the audio element.</audio> | <audio controls markdown="0"><source src="./media/audio/v1_straighttone_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> |
 
 ## User Guide
 
