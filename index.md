@@ -99,6 +99,11 @@ Once a fundamental frequency had been identified, we then performed a raw offset
 containing that transform so that the fundamental frequency of each STFT column resided in the 
 frequency-domain bin which was closest to the target frequency. 
 
+One of the critical differences between our first and second implementations was that our second 
+was able to use multiple target frequencies. The method responsible (detailed below) accepted a vector 
+of target frequencies as a parameter and matched each window's fundamental frequency to its closest match 
+allowing us to tune to an input scale, or other set of frequencies, rather than a single pitch.
+
 ### 5. Inverse Short-Time Fourier-Transform
 
 After performing modifications to the signal's STFT, it is necessary to 
