@@ -8,10 +8,6 @@ A project by [Lizzy Presland](https://linkedin.com/in/etcadinfinitum),
 [Bo Simmons](https://www.linkedin.com/in/bowman-simmons/), and 
 Jayden Fullerton.
 
-## General advice from Stiber (TODO remove this)
-
-Cutting across these topics, your report should make it clear what you learned, relating to both the course material and any unexpected problems or issues that gave you new insight.
-
 ## Summary
 
 In this project, we work to create a utility which processes an audio 
@@ -81,12 +77,6 @@ section focuses on the second of our attempts at implementation.
 A short-time Fourier-transform breaks a signal into windows of a known time duration, and 
 applies an FFT individually for each window.
 
-**TODO: Brief mathematical description of FFT**
-
-**TODO: Briefly cite text on page ~132 about stfts**
-
-**TODO: Hamming window page 128 of textbook**
-
 This is critical because it doesn't just tell us which frequencies are present in the 
 signal as a whole, but during which manageably sized tme durations those frequencies 
 are present. This is what enables us to tune different points in the signal to different 
@@ -133,8 +123,6 @@ Our second and final approach to autotuning utilizes an overlap-add approach to
 istft which utilized the Overlap-add method (pictured in Figure 1). This involves essentially 
 aligning the overlapping portions and adding them together, as described by Radiner (1975). The 
 ISTFT implementation we used was one we found online ([here](http://www.ee.columbia.edu/~dpwe/e4810/matlab/s24/istft.m) ).
-
-**TODO: Math from here: https://archive.org/details/theoryapplicatio00rabi/page/63**
 
 | ![Overlap-Add Method Process](./media/images/1280px-Overlap-add_algorithm.png) |
 |--------------------------------------------------------------------------------|
@@ -210,9 +198,6 @@ function correctedSpectrum = correctPitchSpectrum(s, f, targetPitches)
 end end end end
 ```
 
-TODO: Evaluate this note:
-NOTE: A complete design description. It should be extensive enough for someone else to continue development of the project.
-
 ## Results
 
 ### Approach 1: Raw Frequency Domain Offsets
@@ -241,10 +226,7 @@ Strictly testing:
 
 $$H(z) = \frac{Y(z)}{X(z)}$$
 
-TODO: write up an analysis of what happened to the audio clips we tried 
-to autotune.
-
-### Approach 2: TODO figure out what to call this
+### Approach 2: Mult-Pitch Target Autotuning, Peak-Based, Phase-Vocoder
 
 These are the results for the second approach, using 50% window overlap, fixed 
 window length, and a non-object-oriented approach. We were able to improve our 
@@ -439,7 +421,7 @@ This section enumerates completely separate approaches to auto-tuning.
 
 1. Another approach is the Phase-Vocoder Pitch-Shiting technique, which is not peak-based, described by Laroche and Dolson.
 
-TODO: Discusses other possible ways to implement this.
+2. In some ways a completely different direction, we could have attempted to build our auto-tuner around a real-time pitch detection algorithm.
 
 ## Limitations
 
