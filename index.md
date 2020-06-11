@@ -395,7 +395,7 @@ Unlike the previous approach, you will need to navigate to, and edit, driver2.m.
 Insert, at line 14, one of the following two options (replacing anything in and including angle braces with the appropriate values you want as specified):
 
 | Case A: Single Channel Audio File | Case B: Two Channel Audio File |
-|--------------------------------------------------------------------|
+|-----------------------------------|--------------------------------|
 | `[ogSignal, Fso] = audioread(<audiofilename>);` | `[ogSignal, Fso] = audioread(<audiofilename>);` |
 | `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` | `ogSignal = ogSignal(:,1) + ogSignal(:,2);` |
 | | `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
