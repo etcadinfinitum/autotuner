@@ -443,10 +443,6 @@ TODO: Discusses other possible ways to implement this.
 
 ## Limitations
 
-Our existing implementation of this solution requires a single tone as 
-input, and does not allow for a time-series representation of multiple 
-target pitches. 
-
 NOTE: What your project doesn’t do, that it might have, given time and motivation.
 
 ## Problems
