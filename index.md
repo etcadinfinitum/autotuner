@@ -236,7 +236,7 @@ $$H(z) = \frac{Y(z)}{X(z)}$$
 TODO: write up an analysis of what happened to the audio clips we tried 
 to autotune.
 
-### Approach 2
+### Approach 2: TODO figure out what to call this
 
 These are the results for the second approach, using 50% window overlap, fixed 
 window length, and a non-object-oriented approach. We were able to improve our 
