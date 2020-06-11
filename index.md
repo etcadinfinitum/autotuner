@@ -108,6 +108,13 @@ the inverted FFT. Lastly, if the overlap parameter is non-zero, the resulting
 reconverted signal is cumulatively at the offset specified by the overlap 
 parameter.
 
+We specifically searched for, and utilized, and istft which utilized the Overlap-add 
+method (pictured in Figure 1).
+
+| ![Overlap-Add Method Process](./media/images/1280px-Overlap-add_algorithm.png) |
+|-______________________________________________________________________________-|
+| Figure 1: Overlap-Add Algorithm Visualization |
+
 TODO: citable source is needed; also, diagram of this process would be useful.
 
 NOTE: Course concepts and algorithms covered by the project. This section is the core justification that this project should result in a good grade for you.
