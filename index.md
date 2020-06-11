@@ -109,7 +109,8 @@ reconverted signal is cumulatively at the offset specified by the overlap
 parameter.
 
 Our second and final approach to autotuning utilizes an overlap-add approach to 
-istft which utilized the Overlap-add method (pictured in Figure 1). This involves
+istft which utilized the Overlap-add method (pictured in Figure 1). This involves essentially 
+aligning the overlapping portions and adding them together.
 
 **TODO: Math from here: https://archive.org/details/theoryapplicatio00rabi/page/63**
 
