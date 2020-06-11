@@ -447,24 +447,24 @@ NOTE: What your project doesn’t do, that it might have, given time and motivat
 
 ### Language- and Domain-Specific Issues
 
-For this project, we chose Matlab to implement our pitch correction tools. 
+1. For this project, we chose Matlab to implement our pitch correction tools. 
 There are significant benefits to this: easy manipulation of multidimensional 
 arrays, straightforward handling of complex values, and convenient 
 built-in methods for Fourier transform operations, to name a few.
 
-However, we experienced inconveniences with Matlab in this project; 
+2. However, we experienced inconveniences with Matlab in this project; 
 the wall-clock computation time for producing pitch corrections varied 
 between dozens of seconds and whole minutes, depending on the length of 
 the input audio file.
 
-It was also difficult to prototype specific functionality, because the 
+3. It was also difficult to prototype specific functionality, because the 
 process of loading an audio file, calculating its STFT, performing 
 pitch correction, and calculating the inverse STFT is a very linear 
 process. The methods we wrote were complex enough, with many required 
 parameters, that trying to call them from the Matlab CLI could be 
 confusing.
 
-These problems may have been easily mitigated if we had begun development 
+4. These problems may have been easily mitigated if we had begun development 
 of the pitch correction implementation with a clearer design for the 
 application in mind, and decoupled some of the steps from each other 
 in more intelligent ways.
@@ -496,18 +496,20 @@ which we list here.
    an effective pitch correction process would minimize or eliminate 
    any complex-valued inverse transforms.
 
-Regarding pre- and post-processing of the signal and its pitch corrected 
-counterpart, we are at a loss when trying to understand what should be 
-done differently. Another [implementation we have looked at](http://www.columbia.edu/~agn2114/results.html) 
-use the complex conjugate of the pitch corrected signal prior to performing 
-the inverse STFT operation, which we do not do here; it is important to 
-note that the referenced project does not appear to have complex conjugate 
-inverse transforms that we have been experiencing, especially in the 
-first naive implementation.
-
 ## Future Work
 
-To address the problem of noise susceptibility, a better approach would 
+1. As noted in the problems section above, there are many suboptimal strategies currently
+being used in regards to the autotuning. Before attempting an expansion of the project,
+many (if not all) of these issues will need to be resolved. The most important change out
+of those listed in the problems section would be choosing frequency-domain bins that better
+reflect the part of the signal that needs to be modified (i.e. analyzing the bin rather than
+picking the maximum from the bin).
+
+2. We could computer the Harmonic Product Spectrum in order to highlight peaks for fundamenta 
+frequencies. This would not work in every case however, and we'd want it to be an optional approach 
+with some sort of flag governing that logic. 
+
+3. To address the problem of noise susceptibility, a better approach would 
 perform cluster analysis of high-valued magnitudes in a single transform 
 bin in the STFT; such an analysis would be more likely to find patterns 
 of significance in the distribution of frequencies to locate the average 
@@ -515,7 +517,7 @@ fundamental frequency with greater accuracy. It would also be advisable to
 examine the most significant frequencies over a range of individual 
 transforms in the STFT.
 
-When a sound contains harmonics or other frequency components, they should 
+4. When a sound contains harmonics or other frequency components, they should 
 almost certainly be scaled so that a pitch correction for a located 
 fundamental frequency has its overtones and other frequency components 
 scaled to a frequency which allows the proportions of the pitch corrected 
