@@ -17,7 +17,12 @@ Cutting across these topics, your report should make it clear what you learned, 
 In this project, we work to create a utility which processes an audio 
 file (for example, human speech or synthesized musical notes) and 
 and produces an audio which has its pitch corrected to a desired 
-frequency in the Western chromatic scale.
+frequency in the Western chromatic scale. We achieve this through the implementation 
+of a basic, peak-based, pitch-shifting phase vocoder. Tuning is achieve by using a 
+Short-Time Fourier-Transform to allow us to isolate fundamental frequencies, calculate and 
+perform shift, then use an Inverse Short-Time Fourier-Transform to reassemble 
+the now tuned signal. Results including spectograms and audio files for two such 
+attempted implementations are included, and future work and areas for improvement are outlined.
 
 ## Background
 
