@@ -393,3 +393,4 @@ Diaz, Joe. "The Fate of Auto-Tune." Music and Technology (2009). [Online PDF.](h
 
 Laroche, J., and M. Dolson. “New Phase-Vocoder Techniques for Pitch-Shifting, Harmonizing and Other Exotic Effects.” Proceedings of the 1999 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics. 1999, pp. 91–94., [doi:10.1109/aspaa.1999.810857](doi:10.1109/aspaa.1999.810857). [Online PDF](https://www.ee.columbia.edu/~dpwe/papers/LaroD99-pvoc.pdf)
 
+Rabiner, Lawrence Richard., and Bernard Gold. Theory and Application of Digital Signal Processing. pp. 63-65. Prentice-Hall, 1975.
