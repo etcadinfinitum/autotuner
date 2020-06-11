@@ -496,6 +496,17 @@ which we list here.
    an effective pitch correction process would minimize or eliminate 
    any complex-valued inverse transforms.
 
+Regarding pre- and post-processing of the signal and its pitch corrected 
+counterpart, we are at a loss when trying to understand what should be 
+done differently. Another [implementation we have looked at](http://www.columbia.edu/~agn2114/results.html) 
+use the complex conjugate of the pitch corrected signal prior to performing 
+the inverse STFT operation, which we do not do here; it is important to 
+note that the referenced project does not appear to have complex conjugate 
+inverse transforms that we have been experiencing, especially in the 
+first naive implementation.
+
+## Future Work
+
 To address the problem of noise susceptibility, a better approach would 
 perform cluster analysis of high-valued magnitudes in a single transform 
 bin in the STFT; such an analysis would be more likely to find patterns 
@@ -510,17 +521,6 @@ fundamental frequency has its overtones and other frequency components
 scaled to a frequency which allows the proportions of the pitch corrected 
 frequency bins to maintain the same relative proportions as the unaltered 
 spectra.
-
-Regarding pre- and post-processing of the signal and its pitch corrected 
-counterpart, we are at a loss when trying to understand what should be 
-done differently. Another [implementation we have looked at](http://www.columbia.edu/~agn2114/results.html) 
-use the complex conjugate of the pitch corrected signal prior to performing 
-the inverse STFT operation, which we do not do here; it is important to 
-note that the referenced project does not appear to have complex conjugate 
-inverse transforms that we have been experiencing, especially in the 
-first naive implementation.
-
-## Future Work
 
 NOTE: Suggested extensions to your program.
 
