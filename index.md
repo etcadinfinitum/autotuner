@@ -218,10 +218,6 @@ We then tested the software on complex and overtone-rich signals.
 | Buddhist Vajrayana chant | ![original spectrogram of vajrayana buddhist chant](./media/images/v1_vajrayana_specgram_original.png)<br/>Original spectrogram of Buddhist vajrayana chant. | ![spectrogram after tuning](./media/images/v1_vajrayana_specgram_tuned.png)<br/>Spectrogram of chant after pitch correction is applied. |
 | Buddhist Vajrayana chant audio | Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound.<br/><audio controls markdown="0" style="width: 100%;"><source src="./media/audio/v1_vajrayana_result.wav" type="audio/wav">Your browser does not support the audio element.</audio> ||
 
-Strictly testing:
-
-$$H(z) = \frac{Y(z)}{X(z)}$$
-
 ### Approach 2: Mult-Pitch Target Autotuning, Peak-Based, Phase-Vocoder
 
 These are the results for the second approach, using 50% window overlap, fixed 
@@ -374,29 +370,29 @@ Insert, at line 14, one of the following two options (replacing anything in and 
 
 | Case A: Single Channel Audio File |
 |-----------------------------------|
-| `[ogSignal, Fso] = audioread(<audiofilename>);` |
-| `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
+| `[ogSignal, Fso] = audioread(audiofilename);` |
+| `[ts Fs] = tuneSampled(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);` |
 
 | Case B: Two Channel Audio File |
 |--------------------------------|
-| `[ogSignal, Fso] = audioread(<audiofilename>);` |
+| `[ogSignal, Fso] = audioread(audiofilename);` |
 |  `ogSignal = ogSignal(:,1) + ogSignal(:,2);` |
-| `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
+| `[ts Fs] = tuneSampled(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);` |
 
 
 Alternatively, if you're looking to prove to yourself that tuning Two Channel audio separately doesn't make a difference, you could consider option C:
 
 | Case C: Two Channel Audio File, Tuning Channels Separately |
 |------------------------------------------------------------|
-| `[ogSignal, Fso] = audioread(<audiofilename>);` |
-| `tuneSampledTwoChannelsSeparately(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
+| `[ogSignal, Fso] = audioread(audiofilename);` |
+| `tuneSampledTwoChannelsSeparately(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);` |
 
 The inputs should be assigned values as follows:
-* <audiofilename> - A string which is the name, including file extension, of the audio file you wish to tune.
-* <windowsize> - An integer representing the intended window size for the Short-Time Fourier-Transform. (Recommendation: 1000).
-* <nfft> - An integer denoting the nfft sampling points for calculating the discrete fourier transforms. (Recommendation: 1024).
-* <wavename> - A string meant to uniquely identify this wave and its output. Must conform to your systems file name character requirements.
-* <targetPitchVector> - A vector of frequencies which represents the set of pitches which you hope to tune your audio to. (Recomendation: Start with the pitch table).
+* `audiofilename` - A string which is the name, including file extension, of the audio file you wish to tune.
+* `windowsize` - An integer representing the intended window size for the Short-Time Fourier-Transform. (Recommendation: 1000).
+* `nfft` - An integer denoting the nfft sampling points for calculating the discrete fourier transforms. (Recommendation: 1024).
+* `wavename` - A string meant to uniquely identify this wave and its output. Must conform to your systems file name character requirements.
+* `targetPitchVector` - A vector of frequencies which represents the set of pitches which you hope to tune your audio to. (Recomendation: Start with the pitch table).
 
 Once those additions have been made for each file you wish to test, save driver2.m.
 
