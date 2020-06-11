@@ -285,6 +285,8 @@ While the C-Major scale provides an example of the advantages of this second app
 
 ## User Guide
 
+### Approach 1: Single Tone
+
 Following these steps will allow anyone to run the software and 
 reproduce our results or experiment with user-supplied sound samples.
 
@@ -355,6 +357,71 @@ also produces the following audio files:
 * A copy of the target frequency tone, saved as `test_audio/tone_<desiredPitch>hz.wav`
 * A copy of the pitch correction result of the original signal, saved as `test_audio/<audioFilename>_tuned_<desiredPitch>.wav`
 * A concatenated version of the input, desired tone, and resulting signal after pitch correction, with half a second of silence between each signal
+
+### Approach 2: Multi-Pitch Targeting
+
+Following these steps will allow anyone to run the approach 2 component of our software in order to tune audio input to any specified set of target frequencies. Calling driver2.m specifically will allow users to reproduce our results or experiment with user-supplied sound samples.
+
+The relevant structure of our project is as follows:
+
+```
+.
+├── matlab/
+│   ├── driver2.m                             (will run tests whose results appear in report)
+│   ├── tuneSampled.m                         (first part of core logic)
+│   ├── correctPitchSpectrum.m                (second part of core logic)
+│   ├── tuneSampledTwoChannelsSeparately.m    (unnecessary, add channels and use tuneSampled)
+│   ├── pitchTable.m                          (Contains half-step chromatic scale to target)
+│   ├── cmajorPitchTable.m                    (Contains C-Major scale to target)
+│   ├── test_audio/                           (Destination of output audio files)
+│   ├── test_images/                          (Destination of output spectrograms)
+│   └── utils
+│       └── depricatedistft.m                 (Not ours, essential to produce audio output)
+└── sounds/
+```
+Each of the Matlab files listed here performs specific functionality.
+
+* driver2.m: The driver with code sections for running each of the tests with shown results. Instructions for adding custom audio can be found below.
+* tuneSampled.m: Responsible for executing both the initial Short-Term Fourier-Transform before passing the spectrum to pitch correction, and also for executing the Inverse Fast-Time Fourier-Transform on the result from pitch correction. This corresponds to steps 1 and 5 from the process outlined in the 'Techniques' section. Additionally, tuneSampled will play tune audio when it finishes, save a copy of the tuned audio, and save pre and post-tuning spectrograms.
+* correctPitchSpectrum.m: This contains the rest of the core logic, corresponding to steps 2, 3, and 4 of the process outlined in 'Techniques.'
+* pitchTable.m: Contains a matrix of the frequencies of the Western chromatic scale from octave 0 through octave 8. This is passed as the set of target frequencies in many of our test cases.
+* cmajorPitchTable.m: Analagous to pitchTable.m, but containing only the pitches found in the C-Major scale.
+* depricatedistft.m: This was, as stated above in the 'Techniques' section, downloaded and not our own code. It uses the Overlap-Add algorithm to inverse the STFT and produce the tuned digital signal, which in turn can be turned into the audio output.
+
+The addition of audio files is the same as for the previous single tone tuning approach.
+
+Unlike the previous approach, you will need to navigate to, and edit, driver2.m.
+
+Insert, at line 14, one of the following two options (replacing anything in and including angle braces with the appropriate values you want as specified):
+
+| Case A: Single Channel Audio File | Case B: Two Channel Audio File |
+|--------------------------------------------------------------------|
+| `[ogSignal, Fso] = audioread(<audiofilename>);` | `[ogSignal, Fso] = audioread(<audiofilename>);` |
+| `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` | `ogSignal = ogSignal(:,1) + ogSignal(:,2);` |
+| | `[ts Fs] = tuneSampled(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
+
+Alternatively, if you're looking to prove to yourself that tuning Two Channel audio separately doesn't make a difference, you could consider option C:
+
+| Case C: Two Channel Audio File, Tuning Channels Separately |
+|------------------------------------------------------------|
+| `[ogSignal, Fso] = audioread(<audiofilename>);` |
+| `tuneSampledTwoChannelsSeparately(ogSignal, Fso, <windowsize>, <nfft>, <wavename>, <targetPitchesVector>);` |
+
+The inputs should be assigned values as follows:
+* <audiofilename> - A string which is the name, including file extension, of the audio file you wish to tune.
+* <windowsize> - An integer representing the intended window size for the Short-Time Fourier-Transform. (Recommendation: 1000).
+* <nfft> - An integer denoting the nfft sampling points for calculating the discrete fourier transforms. (Recommendation: 1024).
+* <wavename> - A string meant to uniquely identify this wave and its output. Must conform to your systems file name character requirements.
+* <targetPitchVector> - A vector of frequencies which represents the set of pitches which you hope to tune your audio to. (Recomendation: Start with the pitch table).
+
+Once those additions have been made for each file you wish to test, save driver2.m.
+
+Once that's complete, you can run driver2.m by typing `driver2` in the Matlab IDE or using the CLI.
+
+Each of those cases above will produce the following outputs:
+* A Spectrogram of the Original Signal - This can be found in `autotuner/matlab/test_images/`.
+* A Spectrogram of the Tuned Signal - This can be found in `autotuner/matlab/test_images/`.
+* A .wav Audio File of the Tuned Result - This will play audibly, and also be saved to `autotuner/matlab/test_audio/`.
 
 How does your software work (from the user’s point of view)? Should include things like screen shots. Illustrate the sytem in operation with real execution examples. A screencast video would be appropriate here (but is not required). If you want to do this, please contact me ahead of time to deliver the video separately, since I assume that it will be too big to submit via Canvas.
 
