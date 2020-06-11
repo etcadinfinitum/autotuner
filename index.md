@@ -112,7 +112,7 @@ We specifically searched for, and utilized, and istft which utilized the Overlap
 method (pictured in Figure 1).
 
 | ![Overlap-Add Method Process](./media/images/1280px-Overlap-add_algorithm.png) |
-|-______________________________________________________________________________-|
+|--------------------------------------------------------------------------------|
 | Figure 1: Overlap-Add Algorithm Visualization |
 
 TODO: citable source is needed; also, diagram of this process would be useful.
