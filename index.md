@@ -60,7 +60,7 @@ failed to identify the correct frequency shift. For this reason, we took a secon
 approach. The results section contains data from both, but the remainder of the techniques 
 section focuses on the second of our attempts at implementation.
 
-# 1. Short-Time Fourier-Transform
+### 1. Short-Time Fourier-Transform
 
 A short-time Fourier-transform breaks a signal into windows of a known time duration, and 
 applies an FFT individually for each window.
@@ -81,20 +81,20 @@ Like our solution, their basic approach utilizes a fixed, uniform window size (t
 and allows a fixed 50% overlap. This is a more simplistic and naive approach, but has half the computational complexity 
 of using 75% overlap (Laroche & Dolson, 1999).
 
-# 2. Peak Detection
+### 2. Peak Detection
 
 When implementing pitch correction, our first approach was simplistic. 
 We elected to locate the frequency with the largest magnitude in each 
 column of the STFT, which we assume is the fundamental frequency for that 
 transform. This was true for both approaches.
 
-# 3 and 4. Calculating and Implementing Frequency Shift for each Window
+### 3 and 4. Calculating and Implementing Frequency Shift for each Window
 
 Once a fundamental frequency had been identified, we then performed a raw offset of the column 
 containing that transform so that the fundamental frequency of each STFT column resided in the 
 frequency-domain bin which was closest to the target frequency. 
 
-# 5. Inverse Short-Time Fourier-Transform
+### 5. Inverse Short-Time Fourier-Transform
 
 After performing modifications to the signal's STFT, it is necessary to 
 convert the frequency domain representation of the modified signal to the 
@@ -128,6 +128,81 @@ steps in the process.
 Furthermore, we also decided that the `AutoTuner` class would not have 
 any graphing utilities embedded into the 
 
+Our final design relied primarily on the following methods:
+
+* **tuneSampled()** to perform the stft using Matlab's spectrogram function, pass the output to correctPitchSpectrum(), then perform an istft on the result.
+* **correctPitchSpectrum()** to iteratively perform peak detection and pitch correction for each window of the stft.
+
+**Code Block 1: Function Definition for tuneSampled():**
+
+```matlab
+function [ts Fs] = tuneSampled(ogSignal, samplingRate, windowsize, nfft, waveName, targetPitches)
+    Fs = samplingRate;
+    % actual stft using spectrogram part
+    [s f t] = spectrogram(ogSignal, hanning(windowsize), windowsize/2, nfft, samplingRate);
+    % file stuff
+    spectrogram(ogSignal, hanning(windowsize), windowsize/2, nfft, samplingRate, 'yaxis');
+    plotTitle = strcat('Spectrogram for Original ', waveName);
+    title(plotTitle);
+    fn = strcat('spectrogram_', waveName, '_original.png');     % TODO (make appropriate destination)
+    saveas(gcf, fn); 
+    % actual pitch correction and istft
+    sc = correctPitchSpectrum(s, f, targetPitches);
+    sc = conj(sc);
+    ts = depricatedistft(sc, nfft, windowsize, windowsize/2);
+    % file stuff
+    [s f t] = spectrogram(ts, hanning(windowsize), windowsize/2, nfft, samplingRate);
+    spectrogram(ts, hanning(windowsize), windowsize/2, nfft, samplingRate, 'yaxis');
+    plotTitle = strcat('Spectrogram for v2 Tuned ', waveName);
+    title(plotTitle);
+    fn = strcat('v2_spectrogram_', waveName, '_tuned.png');     % TODO (make appropriate destination)
+    saveas(gcf, fn); 
+    fn = strcat('v2_', waveName, '_tuned.wav');                 % TODO (make appropriate destination)
+    audiowrite(fn, ts, Fs);
+    % play output
+    sound(ts, Fs);
+end
+```
+
+Note that, while a separate version exists for handling two channel audio by separately tuning each channel, 
+simply adding the channels together and calling tuneSampled is more efficient.
+
+**Code Block 2: Function Definition for correctPitchSpectrum():**
+
+```matlab
+function correctedSpectrum = correctPitchSpectrum(s, f, targetPitches)
+    % s - short-time spectrum
+    % f - frequency space
+    % return correctedSpectrum - a vector of the corrected short-time spectrum values
+    absS = abs(s);
+    y = 20*log10(absS/min(absS(:)));
+    % need number of buckets
+    numBuckets = length(s(1,:));
+    % pre-allocation of return array as Matlab's "intellisense" whinges about it
+    correctedSpectrum = zeros(length(s(:,1)),numBuckets);
+    % main loop
+    for bucket = 1:numBuckets
+        % 1) Identify fundamental frequency for each bucket using frequency that corresponds to max amplitude
+        selectedPitch = f(find((y(:,bucket) == max(y(:,bucket))),bucket,'first'));
+        % 2) individual pitch correction by finding closest value in target table
+        [d, idx] = min(abs(targetPitches - selectedPitch));
+        correctedpitch = targetPitches(idx);
+        % 3) perform pitch shift 
+        shiftFactor = correctedpitch/selectedPitch;
+        for idx = 1:length(s(:,1))
+            shiftval = round(idx/shiftFactor);
+            if shiftval <= length(s(:,1))
+                if shiftval <= 0 % No negative out of bounds indexing
+                    shiftval = 1;
+                end
+                correctedSpectrum(idx,bucket) = s(shiftval,bucket);
+            end
+        end
+    end
+end
+```
+
+TODO: Evaluate this note:
 NOTE: A complete design description. It should be extensive enough for someone else to continue development of the project.
 
 ## Results
@@ -163,57 +238,12 @@ to autotune.
 
 ### Approach 2
 
-**TODO: Move this section into "Techniques"**
-
-A second approach was developed in parallel for testing and comparison purposes. This approach, described by Laroche and Dolson (1999), can be outlined as follows:
-
-* Take a Short-Time Fourier-Transform for the input signal.
-* Detect peaks within the STFT.
-* Calculate frequency shift for each peak.
-* Shift the frequency of each peak.
-* Inverse the STFT in order to produce a tuned signal.
-
-**END TODO**
-
-**TODO: Flesh out introduction.**
+These are the results for the second approach, using 50% window overlap, fixed 
+window length, and a non-object-oriented approach. We were able to improve our 
+turning, as well as choppiness and overall fidelity to the original audio's sound 
+characteristics.
 
 For the purposes of this approach, Matlab’s `spectrogram` function was used rather than the stft function, partially for the purpose of consolidating code where spectrogram’s needed to be produced anyways. The bulk of the process was performed by a single method, `correctPitchSpectrum`. That’s method’s function definition is shown below in Code Block 1.
-
-**Code Block 1: correctPitchSpectrum method for autotuning approach 2**
-```matlab
-function correctedSpectrum = correctPitchSpectrum(s, f, targetPitches)
-    % s - short-time fourier-transform 
-    % f - frequency space
-    % targetPitches - a vector of pitches to tune to
-    % return correctedSpectrum - a vector of the corrected short-time spectrum values
-    absS = abs(s);
-    y = 20*log10(absS/min(absS(:)));
-    % need number of buckets
-    numBuckets = length(s(1,:));
-    % pre-allocation of return array as Matlab's "intellisense" whinges about it
-    correctedSpectrum = zeros(length(s(:,1)),numBuckets);
-    % main loop
-    for bucket = 1:numBuckets
-        % 1) Identify fundamental frequency for each bucket using frequency that corresponds to max amplitude
-        selectedPitch = f(find((y(:,bucket) == max(y(:,bucket))),bucket,'first'));
-        % 2) individual pitch correction by finding closest value in target table
-        [d, idx] = min(abs(targetPitches - selectedPitch));
-        correctedpitch = targetPitches(idx);
-        % 3) perform pitch shift 
-        shiftFactor = correctedpitch/selectedPitch;
-        for idx = 1:length(s(:,1))
-            shiftval = round(idx/shiftFactor);
-            if shiftval <= length(s(:,1))
-                if shiftval <= 0 % No negative out of bounds indexing
-                    shiftval = 1;
-                end
-                correctedSpectrum(idx,bucket) = s(shiftval,bucket);
-            end
-        end
-    end
-end
-
-```
 
 Our first step was validating this second approach. To this end, we generated an audio file with constantly increasing frequency (available below), and attempted to tune it to the C-Major scale. This proved effective, and the tuning shows in the spectrogram as horizontal steps for each change in pitch.
 
