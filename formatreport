@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pandoc $1 -f markdown+implicit_figures+raw_tex -o report.pdf

@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Autotuner | Experiments in autotuning arbitrary sounds in Matlab.</title>
+<meta name="generator" content="Jekyll v3.8.5">
+<meta property="og:title" content="Autotuner">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="Experiments in autotuning arbitrary sounds in Matlab.">
+<meta property="og:description" content="Experiments in autotuning arbitrary sounds in Matlab.">
+<meta property="og:site_name" content="Autotuner">
+<script type="application/ld+json">
+{"headline":"Autotuner","url":"/autotuner/","description":"Experiments in autotuning arbitrary sounds in Matlab.","name":"Autotuner","@type":"WebSite","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/autotuner/assets/css/style.css?v=">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="/autotuner/assets/js/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/autotuner/assets/css/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="">View On GitHub</a></li>
+          
+        </nav>
+      </div>
+<!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Autotuner</h1>
+          <p>Experiments in autotuning arbitrary sounds in Matlab.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href=""></a></span>
+          <span class="credits right">Hosted on GitHub Pages — Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1 id="autotuning-signals-in-matlab">Autotuning Signals in Matlab</h1>
+
+<p>A project by <a href="https://linkedin.com/in/etcadinfinitum">Lizzy Presland</a>, 
+<a href="https://www.linkedin.com/in/bowman-simmons/">Bo Simmons</a>, and 
+Jayden Fullerton.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>In this project, we work to create a utility which processes an audio 
+file (for example, human speech or synthesized musical notes) and 
+and produces an audio which has its pitch corrected to a desired 
+frequency in the Western chromatic scale. We achieve this through the implementation 
+of a basic, peak-based, pitch-shifting phase vocoder. Tuning is achieve by using a 
+Short-Time Fourier-Transform to allow us to isolate fundamental frequencies, calculate and 
+perform shift, then use an Inverse Short-Time Fourier-Transform to reassemble 
+the now tuned signal. Results including spectograms and audio files for two such 
+attempted implementations are included, and future work and areas for improvement are outlined.</p>
+
+<h2 id="background">Background</h2>
+
+<p>In the music industry, the process of pitch correction, informally known 
+as autotuning, is a common practice. Its musical merits are <a href="https://ocw.mit.edu/courses/music-and-theater-arts/21m-380-music-and-technology-contemporary-history-and-aesthetics-fall-2009/projects/MIT21M_380F09_proj_mtech_3.pdf">in constant 
+dispute</a> 
+in the music industry, but its prevalence and popularity in many 
+genres of popular music has secured the technique’s importance in music 
+production and in digital signal processing (DSP).</p>
+
+<p>Traditionally, in music, artists will have to continually take attempts of a song
+until they get a satisfactory attempt where the notes the artist produces/sings line up
+with the intended notes from the song composition. However, artists producing vocals
+that are up to standard is very difficult, and autotuning allows less talented artists
+to produce songs that appear to be from a very talented artist. There is controversy over this,
+as some thinks it takes away from the talent of being an artist, as less
+talented artists can sound better than they actually are. Others argue in favor of autotune,
+saying it allows artists to put more emotion into their songs than they could otherwise because
+they need less attempts.</p>
+
+<p>The implementation of an autotuner is closely related to the more general 
+DSP technique known as a <em>phase vocoder</em>. A phase vocoder is a common technique
+that is used to process audio signals. This is done using a Short-Term Fourier
+Transform, which will be discussed in more detail later. This technique (or variations
+of it) are used in a lot of autotuning software.</p>
+
+<h2 id="techniques">Techniques</h2>
+
+<p>To analyze the frequency content of the audio signal, we utilized 
+short-time Fourier transforms (STFTs) of the input signal. This technique 
+decomposes the audio signal into a series of Fourier transforms, which 
+allows the time domain signal to be represented as a series of 
+frequency domain spectra. With this technique, we can analyze the 
+frequency components of a signal to determine which frequency or frequencies 
+are represented in a small time window of the signal, and work to make changes 
+to that frequency spectrum to achieve our desired results.</p>
+
+<p>This approach, described by Laroche and Dolson (1999), can be outlined as follows:</p>
+
+<ol>
+  <li>Take a Short-Time Fourier-Transform for the input signal.</li>
+  <li>Detect peaks within the STFT.</li>
+  <li>Calculate frequency shift for each peak.</li>
+  <li>Shift the frequency of each peak.</li>
+  <li>Inverse the STFT in order to produce a tuned signal.</li>
+</ol>
+
+<p>These steps will be elaborated on further through the remainder of this section.</p>
+
+<p>Our group made two attempts at implementing this approach. The first worked at 
+effectively tuning individual pitches, but was particularly choppy and at times 
+failed to identify the correct frequency shift. For this reason, we took a second 
+approach. The results section contains data from both, but the remainder of the techniques 
+section focuses on the second of our attempts at implementation.</p>
+
+<h3 id="1-short-time-fourier-transform">1. Short-Time Fourier-Transform</h3>
+
+<p>A short-time Fourier-transform breaks a signal into windows of a known time duration, and 
+applies an FFT individually for each window.</p>
+
+<p>This is critical because it doesn’t just tell us which frequencies are present in the 
+signal as a whole, but during which manageably sized tme durations those frequencies 
+are present. This is what enables us to tune different points in the signal to different 
+pitches, and also to reconstruct the signal later after shifting pitches.</p>
+
+<p>Our final approach fits Laroche and Dolson’s description of a basic, peak-based, pitch-shifting phase covoder. 
+Like our solution, their basic approach utilizes a fixed, uniform window size (the segments on which the ffts are made) 
+and allows a fixed 50% overlap. This is a more simplistic and naive approach, but has half the computational complexity 
+of using 75% overlap (Laroche &amp; Dolson, 1999).</p>
+
+<h3 id="2-peak-detection">2. Peak Detection</h3>
+
+<p>When implementing pitch correction, our first approach was simplistic. 
+We elected to locate the frequency with the largest magnitude in each 
+column of the STFT, which we assume is the fundamental frequency for that 
+transform. This was true for both approaches.</p>
+
+<h3 id="3-and-4-calculating-and-implementing-frequency-shift-for-each-window">3 and 4. Calculating and Implementing Frequency Shift for each Window</h3>
+
+<p>Once a fundamental frequency had been identified, we then performed a raw offset of the column 
+containing that transform so that the fundamental frequency of each STFT column resided in the 
+frequency-domain bin which was closest to the target frequency.</p>
+
+<p>One of the critical differences between our first and second implementations was that our second 
+was able to use multiple target frequencies. The method responsible (detailed below) accepted a vector 
+of target frequencies as a parameter and matched each window’s fundamental frequency to its closest match 
+allowing us to tune to an input scale, or other set of frequencies, rather than a single pitch.</p>
+
+<h3 id="5-inverse-short-time-fourier-transform">5. Inverse Short-Time Fourier-Transform</h3>
+
+<p>After performing modifications to the signal’s STFT, it is necessary to 
+convert the frequency domain representation of the modified signal to the 
+time domain. To accomplish this, we take the inverse of the STFT, which 
+inverts the process used to produce the STFT. First, the inverse FFT of 
+each frequency domain window is calculated, and then the time domain 
+signal values are rescaled using the inverse of the same mapping used to 
+scale the input signal’s window. If a Hamming window is used, the reciprocal 
+of the scale value for each element is used to rescale each element in 
+the inverted FFT. Lastly, if the overlap parameter is non-zero, the resulting 
+reconverted signal is cumulatively at the offset specified by the overlap 
+parameter.</p>
+
+<p>Our second and final approach to autotuning utilizes an overlap-add approach to 
+istft which utilized the Overlap-add method (pictured in Figure 1). This involves essentially 
+aligning the overlapping portions and adding them together, as described by Radiner (1975). The 
+ISTFT implementation we used was one we found online (<a href="http://www.ee.columbia.edu/~dpwe/e4810/matlab/s24/istft.m">here</a> ).</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p><img src="./media/images/1280px-Overlap-add_algorithm.png" alt="Overlap-Add Method Process"></p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p>Figure 1: Overlap-Add Algorithm Visualization (source: https://upload.wikimedia.org/wikipedia/commons/1/10/Gain_oa_method.png)</p>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="design">Design</h2>
+
+<p>To isolate the processing and transformation of a signal, and the parameters 
+required to perform these tasks, we created a class <code class="highlighter-rouge">AutoTuner</code> to provide 
+object members and functions which perform the steps necessary to perform 
+pitch correction. Such a structure allows for multiple pitch correction 
+approaches to be written and documented. We explicitly decided that the 
+client utilizing the class would be responsible for calling the class 
+functions which perform pitch correction and convert the frequency domain 
+STFT back into a time domain signal. Separating each of these steps gives 
+the user greater control over inspecting and graphing the signal at various 
+steps in the process.</p>
+
+<p>Furthermore, we also decided that the <code class="highlighter-rouge">AutoTuner</code> class would not have 
+any graphing utilities embedded into the</p>
+
+<p>Our final design relied primarily on the following methods:</p>
+
+<ul>
+  <li>
+<strong>tuneSampled()</strong> to perform the stft using Matlab’s spectrogram function, pass the output to correctPitchSpectrum(), then perform an istft on the result.</li>
+  <li>
+<strong>correctPitchSpectrum()</strong> to iteratively perform peak detection and pitch correction for each window of the stft.</li>
+</ul>
+
+<p><strong>Code Block 1: Function Definition for tuneSampled():</strong></p>
+
+<div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="p">[</span><span class="n">ts</span> <span class="n">Fs</span><span class="p">]</span> <span class="o">=</span> <span class="n">tuneSampled</span><span class="p">(</span><span class="n">ogSignal</span><span class="p">,</span> <span class="n">samplingRate</span><span class="p">,</span> <span class="n">windowsize</span><span class="p">,</span> <span class="n">nfft</span><span class="p">,</span> <span class="n">waveName</span><span class="p">,</span> <span class="n">targetPitches</span><span class="p">)</span>
+    <span class="n">Fs</span> <span class="o">=</span> <span class="n">samplingRate</span><span class="p">;</span>
+    <span class="c1">% actual stft using spectrogram part</span>
+    <span class="p">[</span><span class="n">s</span> <span class="n">f</span> <span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="p">(</span><span class="n">ogSignal</span><span class="p">,</span> <span class="n">hanning</span><span class="p">(</span><span class="n">windowsize</span><span class="p">),</span> <span class="n">windowsize</span><span class="p">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">nfft</span><span class="p">,</span> <span class="n">samplingRate</span><span class="p">);</span>
+    <span class="c1">%% ... file stuff for outputting spectrogram goes here</span>
+    <span class="c1">% actual pitch correction and istft</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="n">correctPitchSpectrum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">targetPitches</span><span class="p">);</span>
+    <span class="n">sc</span> <span class="o">=</span> <span class="nb">conj</span><span class="p">(</span><span class="n">sc</span><span class="p">);</span> <span class="c1">% Essential</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">depricatedistft</span><span class="p">(</span><span class="n">sc</span><span class="p">,</span> <span class="n">nfft</span><span class="p">,</span> <span class="n">windowsize</span><span class="p">,</span> <span class="n">windowsize</span><span class="p">/</span><span class="mi">2</span><span class="p">);</span>
+    <span class="c1">%% ... file output stuff ...</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Note that, while a separate version exists for handling two channel audio by separately tuning each channel, 
+simply adding the channels together and calling tuneSampled is more efficient.</p>
+
+<p><strong>Code Block 2: Function Definition for correctPitchSpectrum():</strong></p>
+
+<div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="n">correctedSpectrum</span> <span class="o">=</span> <span class="n">correctPitchSpectrum</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">targetPitches</span><span class="p">)</span>
+    <span class="c1">% ...</span>
+    <span class="c1">% SETUP CODE</span>
+    <span class="c1">% ...</span>
+    <span class="c1">% main loop HERE IS WHERE STEPS 2, 3, and 4 FROM OUT PROCESS HAPPEN ...</span>
+    <span class="k">for</span> <span class="n">bucket</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">numBuckets</span>             <span class="c1">% ... ITERATIVELY FOR EACH BUCKET</span>
+        <span class="c1">% 2) Identify fundamental frequency for each bucket using frequency that corresponds to max amplitude</span>
+        <span class="n">selectedPitch</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="nb">find</span><span class="p">((</span><span class="n">y</span><span class="p">(:,</span><span class="n">bucket</span><span class="p">)</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">(:,</span><span class="n">bucket</span><span class="p">))),</span><span class="n">bucket</span><span class="p">,</span><span class="s1">'first'</span><span class="p">));</span>
+        <span class="c1">% 3) individual pitch correction by finding closest value in target table</span>
+        <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">targetPitches</span> <span class="o">-</span> <span class="n">selectedPitch</span><span class="p">));</span>
+        <span class="n">correctedpitch</span> <span class="o">=</span> <span class="n">targetPitches</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+        <span class="c1">% 4) perform pitch shift </span>
+        <span class="n">shiftFactor</span> <span class="o">=</span> <span class="n">correctedpitch</span><span class="p">/</span><span class="n">selectedPitch</span><span class="p">;</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">s</span><span class="p">(:,</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">shiftval</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">idx</span><span class="p">/</span><span class="n">shiftFactor</span><span class="p">);</span>
+            <span class="k">if</span> <span class="n">shiftval</span> <span class="o">&lt;=</span> <span class="nb">length</span><span class="p">(</span><span class="n">s</span><span class="p">(:,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">shiftval</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="c1">% No negative out of bounds indexing</span>
+                    <span class="n">shiftval</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="k">end</span>
+                <span class="n">correctedSpectrum</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="n">bucket</span><span class="p">)</span> <span class="o">=</span> <span class="n">s</span><span class="p">(</span><span class="n">shiftval</span><span class="p">,</span><span class="n">bucket</span><span class="p">);</span>
+<span class="k">end</span> <span class="k">end</span> <span class="k">end</span> <span class="k">end</span>
+</code></pre></div></div>
+
+<h2 id="results">Results</h2>
+
+<h3 id="approach-1-raw-frequency-domain-offsets">Approach 1: Raw Frequency Domain Offsets</h3>
+
+<p>We ran tests on a few sound examples, showing the altered spectrograms 
+and resulting sounds.</p>
+
+<p>Here’s a simple test which uses an E♭ in the 5th octave as input.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Original Signal</p>
+</th>
+      <th>
+<p>Output Signal</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p><img src="./media/images/v1_straighttoneEb5_specgram_original.png" alt="original spectrogram of E-flat 5"></p>
+</td>
+      <td>
+<p><img src="./media/images/v1_straighttoneEb5_specgram_tuned.png" alt="spectrogram after tuning"></p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<audio controls=""><source src="./media/audio/straighttoneEb5_original.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+      <td>
+<audio controls=""><source src="./media/audio/v1_straighttone_result.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>We then tested the software on complex and overtone-rich signals.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td rowspan="2">
+<p>Spoken countdown</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_countdown_specgram_original.png" alt="original spectrogram of E-flat 5">Original spectrogram of spoken numerical countdown.</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_countdown_specgram_tuned.png" alt="spectrogram after tuning">Spectrogram of speech example after pitch correction is applied.</p>
+</td>
+    </tr>
+    <tr>
+      
+      <td colspan="2">
+<p>Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound. <audio controls="" style="width: 100%;"><source src="./media/audio/v1_countdown_result.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio></p>
+</td>
+      
+    </tr>
+    <tr>
+      <td>
+<p>Synthesized C major scale</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_scale_specgram_original.png" alt="original spectrogram of c major scale">Original spectrogram of C major scale.</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_scale_specgram_tuned.png" alt="spectrogram after tuning">Spectrogram of C major scale after pitch correction is applied.</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>C Major scale audio results</p>
+</td>
+      <td colspan="2">
+<p>Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound. <audio controls="" style="width: 100%;"><source src="./media/audio/v1_scale_result.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio></p>
+</td>
+      
+    </tr>
+    <tr>
+      <td>
+<p>Buddhist Vajrayana chant</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_vajrayana_specgram_original.png" alt="original spectrogram of vajrayana buddhist chant">Original spectrogram of Buddhist vajrayana chant.</p>
+</td>
+      <td>
+<p><img src="./media/images/v1_vajrayana_specgram_tuned.png" alt="spectrogram after tuning">Spectrogram of chant after pitch correction is applied.</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>Buddhist Vajrayana chant audio</p>
+</td>
+      <td colspan="2">
+<p>Audio files of a) original signal, b) pitch correction reference tone, and c) pitch corrected sound.<audio controls="" style="width: 100%;"><source src="./media/audio/v1_vajrayana_result.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio></p>
+</td>
+      
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="approach-2-mult-pitch-target-autotuning-peak-based-phase-vocoder">Approach 2: Mult-Pitch Target Autotuning, Peak-Based, Phase-Vocoder</h3>
+
+<p>These are the results for the second approach, using 50% window overlap, fixed 
+window length, and a non-object-oriented approach. We were able to improve our 
+turning, as well as choppiness and overall fidelity to the original audio’s sound 
+characteristics.</p>
+
+<p>For the purposes of this approach, Matlab’s <code class="highlighter-rouge">spectrogram</code> function was used rather than the stft function, partially for the purpose of consolidating code where spectrogram’s needed to be produced anyways. The bulk of the process was performed by a single method, <code class="highlighter-rouge">correctPitchSpectrum</code>. That’s method’s function definition is shown below in Code Block 1.</p>
+
+<p>Our first step was validating this second approach. To this end, we generated an audio file with constantly increasing frequency (available below), and attempted to tune it to the C-Major scale. This proved effective, and the tuning shows in the spectrogram as horizontal steps for each change in pitch.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Original Signal</p>
+</th>
+      <th>
+<p>Output Signal</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p><img src="./media/images/spectrogram__Increasing_original.png" alt="Spectrogram for Original Increasing Frequency Audio"></p>
+</td>
+      <td>
+<p><img src="./media/images/v2_spectrogram__Increasing_tuned.png" alt="spectrogram after tuning"></p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<audio controls=""><source src="./media/audio/increasing.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+      <td>
+<audio controls=""><source src="./media/audio/v2__Increasing_tuned.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Next, and as a point of comparison between the two approaches, consider the C-Major scale .wav file used for testing purposes above. The output was choppy, an not entirely on pitch. Note that our expectation is no significant pitch change, with a secondary goal of maintaining sound characteristics.</p>
+
+<p>Note that while the displayed results were achieved by first adding the two channels of audio sampled from the original .wav file, the same result was achieved by separately tuning each channel and recombining at the end. This is to be expected for a scale.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Original Signal</p>
+</th>
+      <th>
+<p>Output Signal</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p><img src="./media/images/v2_scale_spectrogram_og.png" alt="Spectrogram for Original C-Major Scale Audio"></p>
+</td>
+      <td>
+<p><img src="./media/images/v2_scale_spectrogram_tuned.png" alt="spectrogram after tuning"></p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<audio controls=""><source src="./media/audio/scale_original.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+      <td>
+<audio controls=""><source src="./media/audio/v2_scale_result.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>There are two key observations to make:</p>
+
+<ul>
+  <li>First, the tones are smoother and appear to be the correct pitch.</li>
+  <li>Second, the duration of the output audio is slightly shorter.</li>
+</ul>
+
+<p>The first observation is reflective of the fact that this second approach works extremely well for single tone audio, while the second is reflective of the fact that, during the peak identification process, the beginning and end were ever so slightly truncated.</p>
+
+<p>While the C-Major scale provides an example of the advantages of this second approach over our first, now consider the Vajrayana chant.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Original Signal</p>
+</th>
+      <th>
+<p>Output Signal</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p><img src="./media/images/spectrogram_chant_original.png" alt="Spectrogram for Original Vajrayana Chant"></p>
+</td>
+      <td>
+<p><img src="./media/images/v2_spectrogram_chant_tuned.png" alt="spectrogram after tuning"></p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<audio controls=""><source src="./media/audio/vajrayana_original.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+      <td>
+<audio controls=""><source src="./media/audio/v2_chant_tuned.wav" type="audio/wav"></source>Your browser does not support the audio element.</audio>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="user-guide">User Guide</h2>
+
+<h3 id="approach-1-single-tone">Approach 1: Single Tone</h3>
+
+<p>Following these steps will allow anyone to run the software and 
+reproduce our results or experiment with user-supplied sound samples.</p>
+
+<p>The relevant structure of our project is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── matlab/
+│   ├── AutoTuner.m
+│   ├── driver.m
+│   ├── pitchTable.m
+│   ├── spectrogramPlot.m
+│   ├── test_audio/
+│   ├── test_images/
+│   └── utils
+│       └── AnalogSignal.m
+└── sounds/
+</code></pre></div></div>
+
+<p>Each of the Matlab files listed here performs specific functionality.</p>
+
+<ul>
+  <li>
+<code class="highlighter-rouge">AutoTuner.m</code>: A class which rovides the core implementation of our pitch 
+correction approaches and necessary utilities.
+It contains an object constructor which stores the input arguments and other 
+necessary parameters for creating the STFT and its inverse. There are 
+other important methods in this file which perform pitch correction and 
+create the STFT and its inverse.</li>
+  <li>
+<code class="highlighter-rouge">driver.m</code>: the driver for the end-to-end processing of an audio file. 
+It contains a utility method called <code class="highlighter-rouge">performSinglePitchAutoTune</code>, which 
+allows the user to decrease the repetitiveness of the various steps 
+needed to produce STFT modifications, spectrograms, and audio files for 
+the resulting pitch correction.
+This file also contains calls to produce pitch correction results for 
+different inputs.</li>
+  <li>
+<code class="highlighter-rouge">pitchTable.m</code>: Contains a matrix of the frequencies of the Western 
+chromatic scale from octave 0 through octave 8.</li>
+  <li>
+<code class="highlighter-rouge">spectrogramPlot.m</code>: Creates plots of the STFT and the modified STFT 
+to show the original and pitch-corrected value of the signal in the 
+frequency domain.</li>
+  <li>
+<code class="highlighter-rouge">utils/AnalogSignal.m</code>: we wished to produce an example of the target 
+frequency so that the target frequency and processed input can be 
+compared with each other by the listener. To do this, we utilize the 
+AnalogSignal class provided by Prof. Stiber.</li>
+</ul>
+
+<p>To provide new sound samples, add audio files to the <code class="highlighter-rouge">sounds/</code> directory.</p>
+
+<p>Then, navigate to the <code class="highlighter-rouge">matlab/</code> directory and open up the <code class="highlighter-rouge">driver.m</code> file.</p>
+
+<p>Around line 7, there are a series of calls to the <code class="highlighter-rouge">performSinglePitchAutoTune</code> 
+method. You may add, remove, or reorder these calls as you see fit, and 
+you may add a call to process a sound file you have provided.</p>
+
+<p>If, for example, you wanted to process an audio file called <code class="highlighter-rouge">example.wav</code>, 
+you would move it to the <code class="highlighter-rouge">sounds/</code> directory, and in <code class="highlighter-rouge">driver.m</code>, add a 
+single call:</p>
+
+<div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">performSinglePitchAutoTune</span><span class="p">(</span><span class="s1">'example'</span><span class="p">,</span> <span class="s1">'wav'</span><span class="p">,</span> <span class="n">pitches</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="s1">'test_images/example'</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Then, from the Matlab IDE or from the CLI application, you can invoke 
+the pitch correction process by simply typing <code class="highlighter-rouge">driver</code> to run the script file.</p>
+
+<p>The software produces spectrogram plots of the original signal’s STFT 
+and the modified STFT after pitch correction has been applied. The software 
+also produces the following audio files:</p>
+
+<ul>
+  <li>A copy of the target frequency tone, saved as <code class="highlighter-rouge">test_audio/tone_&lt;desiredPitch&gt;hz.wav</code>
+</li>
+  <li>A copy of the pitch correction result of the original signal, saved as <code class="highlighter-rouge">test_audio/&lt;audioFilename&gt;_tuned_&lt;desiredPitch&gt;.wav</code>
+</li>
+  <li>A concatenated version of the input, desired tone, and resulting signal after pitch correction, with half a second of silence between each signal</li>
+</ul>
+
+<h3 id="approach-2-multi-pitch-targeting">Approach 2: Multi-Pitch Targeting</h3>
+
+<p>Following these steps will allow anyone to run the approach 2 component of our software in order to tune audio input to any specified set of target frequencies. Calling driver2.m specifically will allow users to reproduce our results or experiment with user-supplied sound samples.</p>
+
+<p>The relevant structure of our project is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── matlab/
+│   ├── driver2.m                             (will run tests whose results appear in report)
+│   ├── tuneSampled.m                         (first part of core logic)
+│   ├── correctPitchSpectrum.m                (second part of core logic)
+│   ├── tuneSampledTwoChannelsSeparately.m    (unnecessary, add channels and use tuneSampled)
+│   ├── pitchTable.m                          (Contains half-step chromatic scale to target)
+│   ├── cmajorPitchTable.m                    (Contains C-Major scale to target)
+│   ├── test_audio/                           (Destination of output audio files)
+│   ├── test_images/                          (Destination of output spectrograms)
+│   └── utils
+│       └── depricatedistft.m                 (Not ours, essential to produce audio output)
+└── sounds/
+</code></pre></div></div>
+<p>Each of the Matlab files listed here performs specific functionality.</p>
+
+<ul>
+  <li>driver2.m: The driver with code sections for running each of the tests with shown results. Instructions for adding custom audio can be found below.</li>
+  <li>tuneSampled.m: Responsible for executing both the initial Short-Term Fourier-Transform before passing the spectrum to pitch correction, and also for executing the Inverse Fast-Time Fourier-Transform on the result from pitch correction. This corresponds to steps 1 and 5 from the process outlined in the ‘Techniques’ section. Additionally, tuneSampled will play tune audio when it finishes, save a copy of the tuned audio, and save pre and post-tuning spectrograms.</li>
+  <li>correctPitchSpectrum.m: This contains the rest of the core logic, corresponding to steps 2, 3, and 4 of the process outlined in ‘Techniques.’</li>
+  <li>pitchTable.m: Contains a matrix of the frequencies of the Western chromatic scale from octave 0 through octave 8. This is passed as the set of target frequencies in many of our test cases.</li>
+  <li>cmajorPitchTable.m: Analagous to pitchTable.m, but containing only the pitches found in the C-Major scale.</li>
+  <li>depricatedistft.m: This was, as stated above in the ‘Techniques’ section, downloaded and not our own code. It uses the Overlap-Add algorithm to inverse the STFT and produce the tuned digital signal, which in turn can be turned into the audio output.</li>
+</ul>
+
+<p>The addition of audio files is the same as for the previous single tone tuning approach.</p>
+
+<p>Unlike the previous approach, you will need to navigate to, and edit, driver2.m.</p>
+
+<p>Insert, at line 14, one of the following two options (replacing anything in and including angle braces with the appropriate values you want as specified):</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Case A: Single Channel Audio File</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p>[ogSignal, Fso] = audioread(audiofilename);</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>[ts Fs] = tuneSampled(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);</p>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Case B: Two Channel Audio File</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p>[ogSignal, Fso] = audioread(audiofilename);</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>ogSignal = ogSignal(:,1) + ogSignal(:,2);</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>[ts Fs] = tuneSampled(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);</p>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Alternatively, if you’re looking to prove to yourself that tuning Two Channel audio separately doesn’t make a difference, you could consider option C:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>
+<p>Case C: Two Channel Audio File, Tuning Channels Separately</p>
+</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+<p>[ogSignal, Fso] = audioread(audiofilename);</p>
+</td>
+    </tr>
+    <tr>
+      <td>
+<p>tuneSampledTwoChannelsSeparately(ogSignal, Fso, windowsize, nfft, wavename, targetPitchesVector);</p>
+</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The inputs should be assigned values as follows:</p>
+<ul>
+  <li>
+<code class="highlighter-rouge">audiofilename</code> - A string which is the name, including file extension, of the audio file you wish to tune.</li>
+  <li>
+<code class="highlighter-rouge">windowsize</code> - An integer representing the intended window size for the Short-Time Fourier-Transform. (Recommendation: 1000).</li>
+  <li>
+<code class="highlighter-rouge">nfft</code> - An integer denoting the nfft sampling points for calculating the discrete fourier transforms. (Recommendation: 1024).</li>
+  <li>
+<code class="highlighter-rouge">wavename</code> - A string meant to uniquely identify this wave and its output. Must conform to your systems file name character requirements.</li>
+  <li>
+<code class="highlighter-rouge">targetPitchVector</code> - A vector of frequencies which represents the set of pitches which you hope to tune your audio to. (Recomendation: Start with the pitch table).</li>
+</ul>
+
+<p>Once those additions have been made for each file you wish to test, save driver2.m.</p>
+
+<p>Once that’s complete, you can run driver2.m by typing <code class="highlighter-rouge">driver2</code> in the Matlab IDE or using the CLI.</p>
+
+<p>Each of those cases above will produce the following outputs:</p>
+<ul>
+  <li>A Spectrogram of the Original Signal - This can be found in <code class="highlighter-rouge">autotuner/matlab/test_images/</code>.</li>
+  <li>A Spectrogram of the Tuned Signal - This can be found in <code class="highlighter-rouge">autotuner/matlab/test_images/</code>.</li>
+  <li>A .wav Audio File of the Tuned Result - This will play audibly, and also be saved to <code class="highlighter-rouge">autotuner/matlab/test_audio/</code>.</li>
+</ul>
+
+<p>How does your software work (from the user’s point of view)? Should include things like screen shots. Illustrate the sytem in operation with real execution examples. A screencast video would be appropriate here (but is not required). If you want to do this, please contact me ahead of time to deliver the video separately, since I assume that it will be too big to submit via Canvas.</p>
+
+<h2 id="alternative-approaches">Alternative Approaches</h2>
+
+<p>There are several types of “alternative approaches” which, essentially, fall into the category of being more sophisticated 
+versions of the same approach we’ve taken. For this reason, those alternatives can be found in the “Future Work” section below. 
+This section enumerates completely separate approaches to auto-tuning.</p>
+
+<ol>
+  <li>
+    <p>Another approach is the Phase-Vocoder Pitch-Shiting technique, which is not peak-based, described by Laroche and Dolson.</p>
+  </li>
+  <li>
+    <p>In some ways a completely different direction, we could have attempted to build our auto-tuner around a real-time pitch detection algorithm.</p>
+  </li>
+</ol>
+
+<p>An approach we could have taken that was rather similar could have been using the Pitch-Synchronous Overlap-Add tool instead of pitch vocoding. The
+main advantage to using PSOLA over pitch vocoding is PSOLA is designed to modify the pitch of the signal without modifying the other characteristics of
+the signal. This is closely related to the STFT that is used in pitch vocoding. A main advantage of PSOLA is effeciency, as pitch vocoding is relatively ineffecient.</p>
+
+<h2 id="limitations">Limitations</h2>
+
+<ol>
+  <li>
+    <p>While we managed to overcome our project’s initial limitation of only being able to tune to a single target pitch, we are still using an approach which is 
+optimized for audio that plays a single tone at a time. Harmonizing is completely lost with our approach at this time.</p>
+  </li>
+  <li>
+    <p>Our approach does not work well with speech, or any sounds with nuanced characteristics, as it is not only vulnerable to noise, but produces a “choppy” output 
+due to the smaller overlap we used to avoid ballooning computational complexity.</p>
+  </li>
+  <li>
+    <p>We are only capable of auto-tuning recorded audio, and only if the user already has the audio file on-hand to place into the appropriate directory. We can neither 
+handle the recording of new audio, nor the tuning of real-time audio. Both are significant to most actual auto-tuning applications.</p>
+  </li>
+</ol>
+
+<h2 id="problems">Problems</h2>
+
+<h3 id="language--and-domain-specific-issues">Language- and Domain-Specific Issues</h3>
+
+<ol>
+  <li>
+    <p>For this project, we chose Matlab to implement our pitch correction tools. 
+There are significant benefits to this: easy manipulation of multidimensional 
+arrays, straightforward handling of complex values, and convenient 
+built-in methods for Fourier transform operations, to name a few.</p>
+  </li>
+  <li>
+    <p>However, we experienced inconveniences with Matlab in this project; 
+the wall-clock computation time for producing pitch corrections varied 
+between dozens of seconds and whole minutes, depending on the length of 
+the input audio file.</p>
+  </li>
+  <li>
+    <p>It was also difficult to prototype specific functionality, because the 
+process of loading an audio file, calculating its STFT, performing 
+pitch correction, and calculating the inverse STFT is a very linear 
+process. The methods we wrote were complex enough, with many required 
+parameters, that trying to call them from the Matlab CLI could be 
+confusing.</p>
+  </li>
+  <li>
+    <p>These problems may have been easily mitigated if we had begun development 
+of the pitch correction implementation with a clearer design for the 
+application in mind, and decoupled some of the steps from each other 
+in more intelligent ways.</p>
+  </li>
+</ol>
+
+<h3 id="implementation-issues">Implementation Issues</h3>
+
+<p>Our approaches have numerous potential issues, the most significant of 
+which we list here.</p>
+
+<ol>
+  <li>By taking the single largest magnitude in each frequency-domain bin, 
+this implementation is susceptible to signal noise. If a noisy component 
+of the signal, or a harmonic overtone, has a larger magnitude than the 
+fundamental frequency of the speaker or sound source, then the pitch 
+adjustment will be adjusted to pitch correct the incorrect signal 
+component.</li>
+  <li>In complex sound structures which have natural overtones, the overtones 
+which have lower magnitudes in the frequency domain are not 
+properly scaled when the fundamental frequency is shifted to the 
+target frequency bin. This behavior corrupts the sound and introduces 
+pitch beating and distortion to the pitch corrected version of the 
+signal.</li>
+  <li>It is quite possible that this implementation does not perform necessary 
+pre- or post-processing of the frequency spectra after pitch correction is 
+applied. After the frequency-domain STFT is shifted to attempt pitch 
+correction, the inverse STFT operation produces a complex-valued signal, 
+which is to be expected if the STFT doesn’t correspond to a real-valued 
+input signal. However, a complex-valued signal which must be represented 
+with real values will certainly lose fidelity, and it’s possible that 
+an effective pitch correction process would minimize or eliminate 
+any complex-valued inverse transforms.</li>
+</ol>
+
+<h2 id="future-work">Future Work</h2>
+
+<ol>
+  <li>
+    <p>As noted in the problems section above, there are many suboptimal strategies currently
+being used in regards to the autotuning. Before attempting an expansion of the project,
+many (if not all) of these issues will need to be resolved. The most important change out
+of those listed in the problems section would be choosing frequency-domain bins that better
+reflect the part of the signal that needs to be modified (i.e. analyzing the bin rather than
+picking the maximum from the bin).</p>
+  </li>
+  <li>
+    <p>We could computer the Harmonic Product Spectrum in order to highlight peaks for fundamenta 
+frequencies. This would not work in every case however, and we’d want it to be an optional approach 
+with some sort of flag governing that logic.</p>
+  </li>
+  <li>
+    <p>To address the problem of noise susceptibility, a better approach would 
+perform cluster analysis of high-valued magnitudes in a single transform 
+bin in the STFT; such an analysis would be more likely to find patterns 
+of significance in the distribution of frequencies to locate the average 
+fundamental frequency with greater accuracy. It would also be advisable to 
+examine the most significant frequencies over a range of individual 
+transforms in the STFT.</p>
+  </li>
+  <li>
+    <p>When a sound contains harmonics or other frequency components, they should 
+almost certainly be scaled so that a pitch correction for a located 
+fundamental frequency has its overtones and other frequency components 
+scaled to a frequency which allows the proportions of the pitch corrected 
+frequency bins to maintain the same relative proportions as the unaltered 
+spectra.</p>
+  </li>
+  <li>
+    <p>The software could be ported/implemented in another language such as Python.
+This could allow potential integration with a user interface with a simple file
+input/output using either compressed (mp3) or uncompressed (wav/aiff) audio files.</p>
+  </li>
+</ol>
+
+<h2 id="references">References</h2>
+
+<p>Backstrom, Tom. Pitch-Synchronous Overlap-Add. 9 Sept. 2019, wiki.aalto.fi/pages/viewpage.action?pageId=155477136.</p>
+
+<p>Diaz, Joe. “The Fate of Auto-Tune.” Music and Technology (2009). <a href="https://ocw.mit.edu/courses/music-and-theater-arts/21m-380-music-and-technology-contemporary-history-and-aesthetics-fall-2009/projects/MIT21M_380F09_proj_mtech_3.pdf">Online PDF.</a></p>
+
+<p>Laroche, J., and M. Dolson. “New Phase-Vocoder Techniques for Pitch-Shifting, Harmonizing and Other Exotic Effects.” Proceedings of the 1999 IEEE Workshop on Applications of Signal Processing to Audio and Acoustics. 1999, pp. 91–94., <a href="doi:10.1109/aspaa.1999.810857">doi:10.1109/aspaa.1999.810857</a>. <a href="https://www.ee.columbia.edu/~dpwe/papers/LaroD99-pvoc.pdf">Online PDF</a></p>
+
+<p>Rabiner, Lawrence Richard., and Bernard Gold. Theory and Application of Digital Signal Processing. pp. 63-65. Prentice-Hall, 1975.</p>
+
+
+      </section>
+
+    </div>
+
+    
+  </body>
+</html>
