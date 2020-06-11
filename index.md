@@ -372,15 +372,80 @@ NOTE: What your project doesn’t do, that it might have, given time and motivat
 
 ## Problems
 
-Our basic approach, which performs a frequency-domain offset without scaling the magnitude values in each frequency domain bin, has numerous pitfalls:
+### Language- and Domain-Specific Issues
+
+For this project, we chose Matlab to implement our pitch correction tools. 
+There are significant benefits to this: easy manipulation of multidimensional 
+arrays, straightforward handling of complex values, and convenient 
+built-in methods for Fourier transform operations, to name a few.
+
+However, we experienced inconveniences with Matlab in this project; 
+the wall-clock computation time for producing pitch corrections varied 
+between dozens of seconds and whole minutes, depending on the length of 
+the input audio file.
+
+It was also difficult to prototype specific functionality, because the 
+process of loading an audio file, calculating its STFT, performing 
+pitch correction, and calculating the inverse STFT is a very linear 
+process. The methods we wrote were complex enough, with many required 
+parameters, that trying to call them from the Matlab CLI could be 
+confusing.
+
+These problems may have been easily mitigated if we had begun development 
+of the pitch correction implementation with a clearer design for the 
+application in mind, and decoupled some of the steps from each other 
+in more intelligent ways.
+
+### Implementation Issues
+
+Our approaches have numerous potential issues, the most significant of 
+which we list here.
 
 1. By taking the single largest magnitude in each frequency-domain bin, 
-   this implementation is susceptible to signal noise.
+   this implementation is susceptible to signal noise. If a noisy component 
+   of the signal, or a harmonic overtone, has a larger magnitude than the 
+   fundamental frequency of the speaker or sound source, then the pitch 
+   adjustment will be adjusted to pitch correct the incorrect signal 
+   component.
 2. In complex sound structures which have natural overtones, the overtones 
-   which have lower magnitudes are not properly scaled when the fundamental 
-   frequency is scaled. This behavior corrupts the sound and introduces 
-   
-NOTE: Problems encountered and solutions applied (or, if not solved, possible avenues for solution).
+   which have lower magnitudes in the frequency domain are not 
+   properly scaled when the fundamental frequency is shifted to the 
+   target frequency bin. This behavior corrupts the sound and introduces 
+   pitch beating and distortion to the pitch corrected version of the 
+   signal.
+3. It is quite possible that this implementation does not perform necessary 
+   pre- or post-processing of the frequency spectra after pitch correction is 
+   applied. After the frequency-domain STFT is shifted to attempt pitch 
+   correction, the inverse STFT operation produces a complex-valued signal, 
+   which is to be expected if the STFT doesn't correspond to a real-valued 
+   input signal. However, a complex-valued signal which must be represented 
+   with real values will certainly lose fidelity, and it's possible that 
+   an effective pitch correction process would minimize or eliminate 
+   any complex-valued inverse transforms.
+
+To address the problem of noise susceptibility, a better approach would 
+perform cluster analysis of high-valued magnitudes in a single transform 
+bin in the STFT; such an analysis would be more likely to find patterns 
+of significance in the distribution of frequencies to locate the average 
+fundamental frequency with greater accuracy. It would also be advisable to 
+examine the most significant frequencies over a range of individual 
+transforms in the STFT.
+
+When a sound contains harmonics or other frequency components, they should 
+almost certainly be scaled so that a pitch correction for a located 
+fundamental frequency has its overtones and other frequency components 
+scaled to a frequency which allows the proportions of the pitch corrected 
+frequency bins to maintain the same relative proportions as the unaltered 
+spectra.
+
+Regarding pre- and post-processing of the signal and its pitch corrected 
+counterpart, we are at a loss when trying to understand what should be 
+done differently. Another [implementation we have looked at](http://www.columbia.edu/~agn2114/results.html) 
+use the complex conjugate of the pitch corrected signal prior to performing 
+the inverse STFT operation, which we do not do here; it is important to 
+note that the referenced project does not appear to have complex conjugate 
+inverse transforms that we have been experiencing, especially in the 
+first naive implementation.
 
 ## Future Work
 
