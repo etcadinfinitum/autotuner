@@ -423,6 +423,10 @@ This section enumerates completely separate approaches to auto-tuning.
 
 2. In some ways a completely different direction, we could have attempted to build our auto-tuner around a real-time pitch detection algorithm.
 
+An approach we could have taken that was rather similar could have been using the Pitch-Synchronous Overlap-Add tool instead of pitch vocoding. The
+main advantage to using PSOLA over pitch vocoding is PSOLA is designed to modify the pitch of the signal without modifying the other characteristics of
+the signal. This is closely related to the STFT that is used in pitch vocoding. A main advantage of PSOLA is effeciency, as pitch vocoding is relatively ineffecient.
+
 ## Limitations
 
 1. While we managed to overcome our project's initial limitation of only being able to tune to a single target pitch, we are still using an approach which is 
