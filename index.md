@@ -131,8 +131,8 @@ parameter.
 
 Our second and final approach to autotuning utilizes an overlap-add approach to 
 istft which utilized the Overlap-add method (pictured in Figure 1). This involves essentially 
-aligning the overlapping portions and adding them together. The ISTFT implementation we used 
-was one we found online ([here](http://www.ee.columbia.edu/~dpwe/e4810/matlab/s24/istft.m) ).
+aligning the overlapping portions and adding them together, as described by Radiner (1975). The 
+ISTFT implementation we used was one we found online ([here](http://www.ee.columbia.edu/~dpwe/e4810/matlab/s24/istft.m) ).
 
 **TODO: Math from here: https://archive.org/details/theoryapplicatio00rabi/page/63**
 
