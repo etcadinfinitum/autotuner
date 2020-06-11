@@ -425,7 +425,14 @@ This section enumerates completely separate approaches to auto-tuning.
 
 ## Limitations
 
-NOTE: What your project doesn’t do, that it might have, given time and motivation.
+1. While we managed to overcome our project's initial limitation of only being able to tune to a single target pitch, we are still using an approach which is 
+optimized for audio that plays a single tone at a time. Harmonizing is completely lost with our approach at this time.
+
+2. Our approach does not work well with speech, or any sounds with nuanced characteristics, as it is not only vulnerable to noise, but produces a "choppy" output 
+due to the smaller overlap we used to avoid ballooning computational complexity.
+
+3. We are only capable of auto-tuning recorded audio, and only if the user already has the audio file on-hand to place into the appropriate directory. We can neither 
+handle the recording of new audio, nor the tuning of real-time audio. Both are significant to most actual auto-tuning applications.
 
 ## Problems
 
