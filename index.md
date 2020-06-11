@@ -108,8 +108,10 @@ the inverted FFT. Lastly, if the overlap parameter is non-zero, the resulting
 reconverted signal is cumulatively at the offset specified by the overlap 
 parameter.
 
-We specifically searched for, and utilized, and istft which utilized the Overlap-add 
-method (pictured in Figure 1).
+Our second and final approach to autotuning utilizes an overlap-add approach to 
+istft which utilized the Overlap-add method (pictured in Figure 1). This involves
+
+**TODO: Math from here: https://archive.org/details/theoryapplicatio00rabi/page/63**
 
 | ![Overlap-Add Method Process](./media/images/1280px-Overlap-add_algorithm.png) |
 |--------------------------------------------------------------------------------|
