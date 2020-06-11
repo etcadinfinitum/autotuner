@@ -33,10 +33,21 @@ in the music industry, but its prevalence and popularity in many
 genres of popular music has secured the technique's importance in music 
 production and in digital signal processing (DSP).
 
-The implementation of an autotuner is closely related to the more general 
-DSP technique known as a _phase vocoder_. TODO elaborate
+Traditionally, in music, artists will have to continually take attempts of a song
+until they get a satisfactory attempt where the notes the artist produces/sings line up
+with the intended notes from the song composition. However, artists producing vocals
+that are up to standard is very difficult, and autotuning allows less talented artists
+to produce songs that appear to be from a very talented artist. There is controversy over this,
+as some thinks it takes away from the talent of being an artist, as less
+talented artists can sound better than they actually are. Others argue in favor of autotune,
+saying it allows artists to put more emotion into their songs than they could otherwise because
+they need less attempts.
 
-NOTE: An introduction to the application area, including how your project fits into the existing state of the art. You should have done a literature search and read some real (i.e., non-web) reference material.
+The implementation of an autotuner is closely related to the more general 
+DSP technique known as a _phase vocoder_. A phase vocoder is a common technique
+that is used to process audio signals. This is done using a Short-Term Fourier
+Transform, which will be discussed in more detail later. This technique (or variations
+of it) are used in a lot of autotuning software.
 
 ## Techniques
 
