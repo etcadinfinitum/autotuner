@@ -128,10 +128,6 @@ ISTFT implementation we used was one we found online ([here](http://www.ee.colum
 |--------------------------------------------------------------------------------|
 | Figure 1: Overlap-Add Algorithm Visualization (source: https://upload.wikimedia.org/wikipedia/commons/1/10/Gain_oa_method.png) |
 
-TODO: citable source is needed; also, diagram of this process would be useful.
-
-NOTE: Course concepts and algorithms covered by the project. This section is the core justification that this project should result in a good grade for you.
-
 ## Design
 
 To isolate the processing and transformation of a signal, and the parameters 
