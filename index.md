@@ -530,6 +530,10 @@ scaled to a frequency which allows the proportions of the pitch corrected
 frequency bins to maintain the same relative proportions as the unaltered 
 spectra.
 
+5. The software could be ported/implemented in another language such as Python.
+This could allow potential integration with a user interface with a simple file
+input/output using either compressed (mp3) or uncompressed (wav/aiff) audio files.
+
 ## References
 
 Diaz, Joe. "The Fate of Auto-Tune." Music and Technology (2009). [Online PDF.](https://ocw.mit.edu/courses/music-and-theater-arts/21m-380-music-and-technology-contemporary-history-and-aesthetics-fall-2009/projects/MIT21M_380F09_proj_mtech_3.pdf)
