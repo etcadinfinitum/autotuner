@@ -8,9 +8,8 @@ cmajorPitchTable
 % performSinglePitchAutoTune('test_sig_Eb5', 'wav', pitches(5, 10), 'test_images/test_sig_Eb5');
 % performSinglePitchAutoTune('speech_countdown', 'aiff', pitches(5, 10), 'test_images/countdown');
 performSinglePitchAutoTune('eqt-major-sc', 'wav', pitches(5, 10), 'test_images/CMscale');
-performSinglePitchAutoTune('overtones_vajrayana', 'aiff', pitches(5, 10), 'test_images/vajrayana');
+% performSinglePitchAutoTune('overtones_vajrayana', 'aiff', pitches(5, 10), 'test_images/vajrayana');
 
-%% APPROACH 1
 function performSinglePitchAutoTune(audioFilename, audioFilenameExt, desiredPitch, spectrogramFileNameShort)
     [y, Fs] = audioread(['../sounds/', audioFilename, '.', audioFilenameExt]);
     % TESTING ONLY
@@ -47,19 +46,8 @@ function performSinglePitchAutoTune(audioFilename, audioFilenameExt, desiredPitc
     audiowrite(['test_audio/', audioFilename, '_orig_tone_tuned_', num2str(desiredPitch), '.wav'], [rescale(sum(y, 2), -1, 1); zeros(round(Fs/2), 1); rescale(sum(tone, 2), -1, 1); zeros(round(Fs/2), 1); rescale(sum(yNew, 2), -1, 1)], Fs);
 end
 
-%% APROACH 2
-%  This method of driving doesn't work as well for some reason, use driver
-%  2 to run.
-% function performApproach2Autotune_OneChannel(audiofilename, audiofileext, targetPitches)
-%     [ogSignal, Fso] = audioread(['../sounds/', audiofilename, '.', audiofileext]);
-%     obj = AutoTuner(ogSignal, targetPitches(1), Fso, round(Fso / 50));
-%     obj.postSamplingTuning_SingleChannel_Approach2(audiofilename, targetPitches);
-%     obj.soundOut();
-% end
-% 
-% function performApproach2Autotune_TwoChannel(audiofilename, audiofileext, targetPitches)
-%     [ogSignal, Fso] = audioread(['../sounds/', audiofilename, '.', audiofileext]);
-%     obj = AutoTuner(ogSignal, targetPitches(1), Fso, round(Fso / 50));
-%     obj.postSamplingTuning_TwoChannel_Approach2(audiofilename, targetPitches);
-%     obj.soundOut();
-% end
+function performApproach2Autotune(audiofilename, audiofileext, targetpitches)
+    [ogSignal, Fso] = audioread(['../sounds/', audiofilename, '.', audiofileext]);
+    obj = AutoTuner(y, targetPitches(1), Fs, round(Fs / 50));
+    obj.
+end

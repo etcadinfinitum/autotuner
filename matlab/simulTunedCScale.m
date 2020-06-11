@@ -1,0 +1,13 @@
+[ogSignal, Fso] = audioread('eqt-major-sc.wav');
+s1 = ogSignal(:,1);
+s2 = ogSignal(:,2);
+s = s1 + s2;
+spectrogram(s, hanning(1000), 1000/2, 1024, 44100, 'yaxis');
+title('Spectrogram for Original C-Major Scale Audio');
+saveas(gcf, 'cscale/cscaleSingleChannelConversion.png');
+[ts Fs] = tuneSampled(s, Fso, 1000, 1024, 'cscale', pitches());
+spectrogram(ts, hanning(1000), 1000/2, 1024, 44100, 'yaxis');
+title('Spectrogram for Second Tuned C-Major Scale Audio');
+saveas(gcf, 'cscale/cscaleSimulTuned.png');
+sound(ts, Fso);
+audiowrite('cscaleSimulTuned.wav', ts, 44100);

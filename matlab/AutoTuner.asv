@@ -54,8 +54,8 @@ classdef AutoTuner
             sound(obj.tuned, obj.sampledAtFreq);
         end
         
-        function obj = postSamplingTuning_TwoChannel_Approach2(obj, name, targetPitches)
-            obj.originalSig = obj.originalSig(:,1) + obj.originalSig(:,2);
+        function postSamplingTuning_TwoChannel_Approach2(obj)
+            obj.originalSig(:,1) + obj.originalSig(:,2);
             [ts Fs] = tuneSampled(obj.originalSig, obj.sampledAtFreq, obj.windowSize, 1024, name, targetPitches);
             obj.tuned = ts;
         end
