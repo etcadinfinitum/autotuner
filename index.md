@@ -44,19 +44,57 @@ frequency components of a signal to determine which frequency or frequencies
 are represented in a small time window of the signal, and work to make changes 
 to that frequency spectrum to achieve our desired results.
 
-TODO: more details about STFT mechanics, paying particular attention 
-to the overlap mechanics and window types. Our implementation uses a 
-Hamming window; a mathematical and graphical description of this window 
-is probably important.
+This approach, described by Laroche and Dolson (1999), can be outlined as follows:
+
+1. Take a Short-Time Fourier-Transform for the input signal.
+2. Detect peaks within the STFT.
+3. Calculate frequency shift for each peak.
+4. Shift the frequency of each peak.
+5. Inverse the STFT in order to produce a tuned signal.
+
+These steps will be elaborated on further through the remainder of this section.
+
+Our group made two attempts at implementing this approach. The first worked at 
+effectively tuning individual pitches, but was particularly choppy and at times 
+failed to identify the correct frequency shift. For this reason, we took a second 
+approach. The results section contains data from both, but the remainder of the techniques 
+section focuses on the second of our attempts at implementation.
+
+# 1. Short-Time Fourier-Transform
+
+A short-time Fourier-transform breaks a signal into windows of a known time duration, and 
+applies an FFT individually for each window.
+
+**TODO: Brief mathematical description of FFT**
+
+**TODO: Briefly cite text on page ~132 about stfts**
+
+**TODO: Hamming window page 128 of textbook**
+
+This is critical because it doesn't just tell us which frequencies are present in the 
+signal as a whole, but during which manageably sized tme durations those frequencies 
+are present. This is what enables us to tune different points in the signal to different 
+pitches, and also to reconstruct the signal later after shifting pitches.
+
+Our final approach fits Laroche and Dolson's description of a basic, peak-based, pitch-shifting phase covoder. 
+Like our solution, their basic approach utilizes a fixed, uniform window size (the segments on which the ffts are made) 
+and allows a fixed 50% overlap. This is a more simplistic and naive approach, but has half the computational complexity 
+of using 75% overlap (Laroche & Dolson, 1999).
+
+# 2. Peak Detection
 
 When implementing pitch correction, our first approach was simplistic. 
 We elected to locate the frequency with the largest magnitude in each 
 column of the STFT, which we assume is the fundamental frequency for that 
-transform. We then perform a raw offset of the column containing that transform 
-so that the fundamental frequency of each STFT column resided in the frequency-domain 
-bin which was closest to the target frequency. 
+transform. This was true for both approaches.
 
-TODO: secondary technique for pitch correction?
+# 3 and 4. Calculating and Implementing Frequency Shift for each Window
+
+Once a fundamental frequency had been identified, we then performed a raw offset of the column 
+containing that transform so that the fundamental frequency of each STFT column resided in the 
+frequency-domain bin which was closest to the target frequency. 
+
+# 5. Inverse Short-Time Fourier-Transform
 
 After performing modifications to the signal's STFT, it is necessary to 
 convert the frequency domain representation of the modified signal to the 
@@ -123,7 +161,7 @@ $$H(z) = \frac{Y(z)}{X(z)}$$
 TODO: write up an analysis of what happened to the audio clips we tried 
 to autotune.
 
-### Approach 2: Phase-Vocoder Approach
+### Approach 2
 
 **TODO: Move this section into "Techniques"**
 
