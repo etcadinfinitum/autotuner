@@ -127,7 +127,7 @@ was one we found online ([here](http://www.ee.columbia.edu/~dpwe/e4810/matlab/s2
 
 | ![Overlap-Add Method Process](./media/images/1280px-Overlap-add_algorithm.png) |
 |--------------------------------------------------------------------------------|
-| Figure 1: Overlap-Add Algorithm Visualization |
+| Figure 1: Overlap-Add Algorithm Visualization (source: https://upload.wikimedia.org/wikipedia/commons/1/10/Gain_oa_method.png) |
 
 TODO: citable source is needed; also, diagram of this process would be useful.
 
