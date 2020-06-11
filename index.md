@@ -433,6 +433,12 @@ How does your software work (from the user’s point of view)? Should include th
 
 ## Alternative Approaches
 
+There are several types of "alternative approaches" which, essentially, fall into the category of being more sophisticated 
+versions of the same approach we've taken. For this reason, those alternatives can be found in the "Future Work" section below. 
+This section enumerates completely separate approaches to auto-tuning.
+
+1. Another approach is the Phase-Vocoder Pitch-Shiting technique, which is not peak-based, described by Laroche and Dolson.
+
 TODO: Discusses other possible ways to implement this.
 
 ## Limitations
